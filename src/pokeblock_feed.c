@@ -859,8 +859,8 @@ static void Task_PrintAtePokeblockMessage(u8 taskId)
 {
     struct Pokemon *mon = &gPlayerParty[gPokeblockMonId];
     struct Pokeblock *pokeblock = &gSaveBlock1Ptr->pokeblocks[gSpecialVar_ItemId];
-
-    gPokeblockGain = PokeblockGetGain(GetNature(mon), pokeblock);
+    
+    gPokeblockGain = PokeblockGetGain(GetNature(mon, FALSE), pokeblock);
     GetMonNickname(mon, gStringVar1);
     PokeblockCopyName(pokeblock, gStringVar2);
 
