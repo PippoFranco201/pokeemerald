@@ -4591,7 +4591,7 @@ const struct Item gItems[] =
     //mints
     [ITEM_ADAMANT_MINT] = 
     {
-        .name = _("Adamant Mint"),
+        .name = _("ADAMANT MINT"),
         .itemId = ITEM_ADAMANT_MINT,
         .price = 20000,
         .description = sAdamantMintDesc,
@@ -4602,7 +4602,7 @@ const struct Item gItems[] =
     },
     [ITEM_BOLD_MINT] = 
     {
-        .name = _("Bold Mint"),
+        .name = _("BOLD MINT"),
         .itemId = ITEM_BOLD_MINT,
         .price = 20000,
         .description = sBoldMintDesc,
@@ -4613,7 +4613,7 @@ const struct Item gItems[] =
     },
     [ITEM_BRAVE_MINT] = 
     {
-        .name = _("Brave Mint"),
+        .name = _("BRAVE MINT"),
         .itemId = ITEM_BRAVE_MINT,
         .price = 20000,
         .description = sBraveMintDesc,
@@ -4624,7 +4624,7 @@ const struct Item gItems[] =
     },
     [ITEM_CALM_MINT] = 
     {
-        .name = _("Calm Mint"),
+        .name = _("CAKM MINT"),
         .itemId = ITEM_CALM_MINT,
         .price = 20000,
         .description = sCalmMintDesc,
@@ -4635,7 +4635,7 @@ const struct Item gItems[] =
     },
     [ITEM_CAREFUL_MINT] = 
     {
-        .name = _("Careful Mint"),
+        .name = _("CAREFUL MINT"),
         .itemId = ITEM_CAREFUL_MINT,
         .price = 20000,
         .description = sCarefulMintDesc,
@@ -4646,7 +4646,7 @@ const struct Item gItems[] =
     },
     [ITEM_GENTLE_MINT] = 
     {
-        .name = _("Gentle Mint"),
+        .name = _("GENTLE MINT"),
         .itemId = ITEM_GENTLE_MINT,
         .price = 20000,
         .description = sGentleMintDesc,
@@ -4657,7 +4657,7 @@ const struct Item gItems[] =
     },
     [ITEM_HASTY_MINT] = 
     {
-        .name = _("Hasty Mint"),
+        .name = _("HASTY MINT"),
         .itemId = ITEM_HASTY_MINT,
         .price = 20000,
         .description = sHastyMintDesc,
@@ -4668,7 +4668,7 @@ const struct Item gItems[] =
     },
     [ITEM_IMPISH_MINT] = 
     {
-        .name = _("Impish Mint"),
+        .name = _("IMPISH MINT"),
         .itemId = ITEM_IMPISH_MINT,
         .price = 20000,
         .description = sImpishMintDesc,
@@ -4679,7 +4679,7 @@ const struct Item gItems[] =
     },
     [ITEM_JOLLY_MINT] = 
     {
-        .name = _("Jolly Mint"),
+        .name = _("JOLLY MINT"),
         .itemId = ITEM_JOLLY_MINT,
         .price = 20000,
         .description = sJollyMintDesc,
@@ -4690,7 +4690,7 @@ const struct Item gItems[] =
     },
     [ITEM_LAX_MINT] = 
     {
-        .name = _("Lax Mint"),
+        .name = _("LAX MINT"),
         .itemId = ITEM_LAX_MINT,
         .price = 20000,
         .description = sLaxMintDesc,
@@ -4701,7 +4701,7 @@ const struct Item gItems[] =
     },
     [ITEM_LONELY_MINT] = 
     {
-        .name = _("Lonely Mint"),
+        .name = _("LONELY MINT"),
         .itemId = ITEM_LONELY_MINT,
         .price = 20000,
         .description = sLonelyMintDesc,
@@ -4712,7 +4712,7 @@ const struct Item gItems[] =
     },
     [ITEM_MILD_MINT] = 
     {
-        .name = _("Mild Mint"),
+        .name = _("MILD MINT"),
         .itemId = ITEM_MILD_MINT,
         .price = 20000,
         .description = sMildMintDesc,
@@ -4723,7 +4723,7 @@ const struct Item gItems[] =
     },
     [ITEM_MODEST_MINT] = 
     {
-        .name = _("Modest Mint"),
+        .name = _("MODEST MINT"),
         .itemId = ITEM_MODEST_MINT,
         .price = 20000,
         .description = sModestMintDesc,
@@ -4734,7 +4734,7 @@ const struct Item gItems[] =
     },
     [ITEM_NAIVE_MINT] = 
     {
-        .name = _("Naive Mint"),
+        .name = _("NAIVE MINT"),
         .itemId = ITEM_NAIVE_MINT,
         .price = 20000,
         .description = sNaiveMintDesc,
@@ -4745,7 +4745,7 @@ const struct Item gItems[] =
     },
     [ITEM_NAUGHTY_MINT] = 
     {
-        .name = _("Naughty Mint"),
+        .name = _("NAUGHTY MINT"),
         .itemId = ITEM_NAUGHTY_MINT,
         .price = 20000,
         .description = sNaughtyMintDesc,
@@ -4756,7 +4756,7 @@ const struct Item gItems[] =
     },
     [ITEM_QUIET_MINT] = 
     {
-        .name = _("Quiet Mint"),
+        .name = _("QUIET MINT"),
         .itemId = ITEM_QUIET_MINT,
         .price = 20000,
         .description = sQuietMintDesc,
@@ -4767,7 +4767,7 @@ const struct Item gItems[] =
     },
     [ITEM_RASH_MINT] = 
     {
-        .name = _("Rash Mint"),
+        .name = _("RASH MINT"),
         .itemId = ITEM_RASH_MINT,
         .price = 20000,
         .description = sRashMintDesc,
@@ -4778,7 +4778,7 @@ const struct Item gItems[] =
     },
     [ITEM_RELAXED_MINT] = 
     {
-        .name = _("Relaxed Mint"),
+        .name = _("RELAXED MINT"),
         .itemId = ITEM_RELAXED_MINT,
         .price = 20000,
         .description = sRelaxedMintDesc,
@@ -4789,7 +4789,7 @@ const struct Item gItems[] =
     },
     [ITEM_SASSY_MINT] = 
     {
-        .name = _("Sassy Mint"),
+        .name = _("SASSY MINT"),
         .itemId = ITEM_SASSY_MINT,
         .price = 20000,
         .description = sSassyMintDesc,
@@ -4800,7 +4800,7 @@ const struct Item gItems[] =
     },
     [ITEM_SERIOUS_MINT] = 
     {
-        .name = _("Serious Mint"),
+        .name = _("SERIOUS MINT"),
         .itemId = ITEM_SERIOUS_MINT,
         .price = 20000,
         .description = sSeriousMintDesc,
@@ -4811,7 +4811,7 @@ const struct Item gItems[] =
     },
     [ITEM_TIMID_MINT] = 
     {
-        .name = _("Timid Mint"),
+        .name = _("TIMID MINT"),
         .itemId = ITEM_TIMID_MINT,
         .price = 20000,
         .description = sTimidMintDesc,
