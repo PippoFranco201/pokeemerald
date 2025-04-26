@@ -197,6 +197,10 @@ int ProcessPlayerFieldInput(struct FieldInput *input)
     return FALSE;
 }
 
+void overworld_poison_timer_set(void)
+{
+}
+
 static void GetPlayerPosition(struct MapPosition *position)
 {
     PlayerGetDestCoords(&position->x, &position->y);
@@ -638,6 +642,10 @@ static void UpdateFriendshipStepCounter(void)
 void ClearPoisonStepCounter(void)
 {
     VarSet(VAR_POISON_STEP_COUNTER, 0);
+}
+
+void FieldInput_HandleCancelSignpost(struct FieldInput *input)
+{
 }
 
 static bool8 UpdatePoisonStepCounter(void)
