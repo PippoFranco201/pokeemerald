@@ -912,7 +912,7 @@ static u8 CreateMonSprite(struct Pokemon *mon)
 
     sPokeblockFeed->species = species;
     sPokeblockFeed->monSpriteId_ = spriteId;
-    sPokeblockFeed->nature = GetNature(mon);
+    sPokeblockFeed->nature = GetNature(mon, FALSE);
     gSprites[spriteId].sSpecies = species;
     gSprites[spriteId].callback = SpriteCallbackDummy;
 
@@ -927,6 +927,7 @@ static u8 CreateMonSprite(struct Pokemon *mon)
 
     return spriteId;
 }
+
 
 static void StartMonJumpForPokeblock(u8 spriteId)
 {
