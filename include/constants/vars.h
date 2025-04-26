@@ -269,7 +269,7 @@
 #define VAR_BET_BJ		                                 0x40F9 // Unused Var
 #define VAR_OPTIONS_BJ	                                 0x40FA // Unused Var
 #define VAR_OPTION1_TILENUM                              0x40FB // Unused Var
-#define VAR_OPTION2_TILENUM                              0x40FC // Unused Var
+#define VAR_DIFFICULTY                                   0x40FC
 #define VAR_OPTION3_TILENUM                              0x40FD // Unused Var
 #define VAR_FLIP_LEVEL	                                 0x40FE // Unused Var
 #define VAR_FLIP_WINNINGS                                0x40FF // Unused Var
