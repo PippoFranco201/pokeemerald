@@ -227,6 +227,8 @@ static const u16 sNewGamePCItems[][2] =
     { ITEM_POTION, 5 },
     { ITEM_EXP_SHARE, 1 },
     { ITEM_ADAMANT_MINT, 1 },
+    { ITEM_TM03, 1 },
+    { ITEM_SITRUS_BERRY, 1 },
     { ITEM_NONE, 0 }
 };
 
