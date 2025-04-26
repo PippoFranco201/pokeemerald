@@ -437,14 +437,14 @@ static u8 GetParentToInheritNature(struct DayCare *daycare)
 
 static void _TriggerPendingDaycareEgg(struct DayCare *daycare)
 {
-    [COLOR="DarkRed"]u8 parent;[/COLOR]
+    u8 parent;
     s32 natureTries = 0;
 
     SeedRng2(gMain.vblankCounter2);
     parent = GetParentToInheritNature(daycare);
 
     // don't inherit nature
-    [COLOR="DarkRed"]if (parent > 1)[/COLOR]
+    if (parent > 1)
     {
         daycare->offspringPersonality = (Random2() << 16) | ((Random() % 0xfffe) + 1);
     }
@@ -469,6 +469,7 @@ static void _TriggerPendingDaycareEgg(struct DayCare *daycare)
 
     FlagSet(FLAG_PENDING_DAYCARE_EGG);
 }
+
 
 // Functionally unused
 static void _TriggerPendingDaycareMaleEgg(struct DayCare *daycare)
