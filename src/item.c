@@ -764,20 +764,20 @@ bool8 AddPyramidBagItem(u16 itemId, u16 count)
             {
                 count = 0;
             }
-
+    
             if (count == 0)
                 break;
         }
     }
-
+    
     if (count > 0)
     {
         for (i = 0; i < PYRAMID_BAG_ITEMS_COUNT; i++)
         {
             if (newItems[i] == ITEM_NONE)
             {
-                newItems[i] = itemId;
-                newQuantities[i] = count;
+                newItems[i] = (u16)itemId; // <<< Cast itemId to u16
+                newQuantities[i] = (u16)count; // <<< Cast count to u16
                 if (newQuantities[i] > MAX_BAG_ITEM_CAPACITY)
                 {
                     count = newQuantities[i] - MAX_BAG_ITEM_CAPACITY;
@@ -787,12 +787,13 @@ bool8 AddPyramidBagItem(u16 itemId, u16 count)
                 {
                     count = 0;
                 }
-
+    
                 if (count == 0)
                     break;
             }
         }
     }
+    
 
     if (count == 0)
     {
