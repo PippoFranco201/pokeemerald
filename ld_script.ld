@@ -348,6 +348,7 @@ SECTIONS {
 		src/derby.o(.text);
 		src/snake.o(.text);
 		src/flappybird.o(.text);
+        src/tx_registered_items_menu.o(.text);
     } > ROM =0
 
     script_data :
@@ -718,6 +719,7 @@ SECTIONS {
 		src/derby.o(.rodata);
 		src/snake.o(.rodata);
 		src/flappybird.o(.rodata);
+        src/tx_registered_items_menu.o(.rodata);
     } > ROM =0
 
     song_data :
