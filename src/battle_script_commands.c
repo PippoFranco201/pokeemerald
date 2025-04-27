@@ -325,6 +325,7 @@ static void Cmd_removeattackerstatus1(void);
 static void Cmd_finishaction(void);
 static void Cmd_finishturn(void);
 static void Cmd_trainerslideout(void);
+static void Cmd_leafbladesetfocusenergy(void);
 
 void (* const gBattleScriptingCommandsTable[])(void) =
 {
@@ -576,7 +577,8 @@ void (* const gBattleScriptingCommandsTable[])(void) =
     Cmd_removeattackerstatus1,                   //0xF5
     Cmd_finishaction,                            //0xF6
     Cmd_finishturn,                              //0xF7
-    Cmd_trainerslideout                          //0xF8
+    Cmd_trainerslideout,                         //0xF8
+    Cmd_leafbladesetfocusenergy                  //0xF9
 };
 
 struct StatFractions
@@ -7777,6 +7779,19 @@ static void Cmd_setfocusenergy(void)
     {
         gBattleMons[gBattlerAttacker].status2 |= STATUS2_FOCUS_ENERGY;
         gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_GETTING_PUMPED;
+    }
+    gBattlescriptCurrInstr++;
+}
+
+static void Cmd_leafbladesetfocusenergy(void)
+{
+    if (Random() % 2 == 1) // 50% chance
+    {
+        if (!gBattleMons[gBattlerAttacker].status2)
+        {
+            gBattleMons[gBattlerAttacker].status2 |= STATUS2_FOCUS_ENERGY;
+            gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_GETTING_PUMPED;
+        }
     }
     gBattlescriptCurrInstr++;
 }
