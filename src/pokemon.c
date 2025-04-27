@@ -3206,18 +3206,18 @@ s32 CalculateBaseDamage(struct BattlePokemon *attacker, struct BattlePokemon *de
     if (WEATHER_HAS_EFFECT2)
     {
         // Boost Defense for Ice-types in Hail
-        if ((gBattleWeather & B_WEATHER_HAIL) && (defender->type1 == TYPE_ICE || defender->type2 == TYPE_ICE))
+        if ((gBattleWeather & B_WEATHER_HAIL) && (defender->types[0] == TYPE_ICE || defender->types[1] == TYPE_ICE))
         {
-            defense = (150 * defense) / 100;
+             defense = (150 * defense) / 100;
         }
-
+ 
         // Boost Special Defense for Rock-types in sand
-        if ((gBattleWeather & B_WEATHER_SANDSTORM) && (defender->type1 == TYPE_ROCK || defender->type2 == TYPE_ROCK ||  defender->ability == ABILITY_SAND_VEIL))
+        if ((gBattleWeather & B_WEATHER_SANDSTORM) && (defender->types[0] == TYPE_ROCK || defender->types[1] == TYPE_ROCK ))
         {
-            spDefense = (150 * spDefense) / 100;
+             spDefense = (150 * spDefense) / 100;
         }
     }
-
+    
     // Apply abilities / field sports
     if (defender->ability == ABILITY_THICK_FAT && (type == TYPE_FIRE || type == TYPE_ICE))
         spAttack /= 2;
