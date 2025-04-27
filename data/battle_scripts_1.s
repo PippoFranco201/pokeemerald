@@ -232,6 +232,7 @@ gBattleScriptsForMoveEffects::
 	.4byte BattleScript_EffectCalmMind               @ EFFECT_CALM_MIND
 	.4byte BattleScript_EffectDragonDance            @ EFFECT_DRAGON_DANCE
 	.4byte BattleScript_EffectCamouflage             @ EFFECT_CAMOUFLAGE
+	.4byte BattleScript_EffectLeafBlade              @ EFFECT_LEAF_BLADE
 
 BattleScript_EffectHit::
 	jumpifnotmove MOVE_SURF, BattleScript_HitFromAtkCanceler
@@ -892,6 +893,49 @@ BattleScript_EffectFocusEnergy::
 	waitanimation
 	printfromtable gFocusEnergyUsedStringIds
 	waitmessage B_WAIT_TIME_LONG
+	goto BattleScript_MoveEnd
+
+BattleScript_EffectLeafBlade::
+	jumpifnotmove MOVE_SURF, BattleScript_BladeHitFromAtkCanceler
+	jumpifnostatus3 BS_TARGET, STATUS3_UNDERWATER, BattleScript_BladeHitFromAtkCanceler
+	orword gHitMarker, HITMARKER_IGNORE_UNDERWATER
+	setbyte sDMG_MULTIPLIER, 2
+BattleScript_BladeHitFromAtkCanceler::
+	attackcanceler
+BattleScript_BladeHitFromAccCheck::
+	accuracycheck BattleScript_PrintMoveMissed, ACC_CURR_MOVE
+BattleScript_BladeHitFromAtkString::
+	attackstring
+BattleScript_BladeHitFromCritCalc::
+	critcalc
+	damagecalc
+	typecalc
+	adjustnormaldamage
+BattleScript_LeafBladeHitFromAtkAnimation::
+	attackanimation
+	waitanimation
+	effectivenesssound
+	hitanimation BS_TARGET
+	waitstate
+	healthbarupdate BS_TARGET
+	datahpupdate BS_TARGET
+	critmessage
+	waitmessage B_WAIT_TIME_LONG
+	resultmessage
+	waitmessage B_WAIT_TIME_LONG
+	seteffectwithchance
+	tryfaintmon BS_TARGET
+	jumpifstatus2 BS_ATTACKER, STATUS2_FOCUS_ENERGY, BattleScript_EffectLeafBlade2
+	leafbladesetfocusenergy
+	jumpifstatus2 BS_ATTACKER, STATUS2_FOCUS_ENERGY, BattleScript_EffectGettingPumped
+	goto BattleScript_EffectLeafBlade2
+BattleScript_EffectGettingPumped::
+	printfromtable gFocusEnergyUsedStringIds
+	waitmessage B_WAIT_TIME_LONG
+BattleScript_EffectLeafBlade2::
+	attackcanceler
+	attackstring
+	ppreduce
 	goto BattleScript_MoveEnd
 
 BattleScript_EffectRecoil::
