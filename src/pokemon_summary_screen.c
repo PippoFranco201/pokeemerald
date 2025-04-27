@@ -1569,7 +1569,6 @@ static void ChangeSummaryState(s16 *taskData, u8 taskId)
 static void Task_HandleInput(u8 taskId)
 {
     s16 *taskData = gTasks[taskId].data;
-    
     if (MenuHelpers_ShouldWaitForLinkRecv() != TRUE && !gPaletteFade.active)
     {
         if (JOY_NEW(DPAD_UP))
@@ -1613,7 +1612,6 @@ static void Task_HandleInput(u8 taskId)
                 SwitchToMoveSelection(taskId);
             }
         }
-        }
         else if (JOY_NEW(B_BUTTON))
         {
             StopPokemonAnimations();
@@ -1621,6 +1619,7 @@ static void Task_HandleInput(u8 taskId)
             BeginCloseSummaryScreen(taskId);
         }
     }
+}
 
 static void ChangeSummaryPokemon(u8 taskId, s8 delta)
 {
