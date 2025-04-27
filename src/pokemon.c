@@ -3232,7 +3232,7 @@ s32 CalculateBaseDamage(struct BattlePokemon *attacker, struct BattlePokemon *de
 if (gBattleWeather & B_WEATHER_SANDSTORM)  // Check if Sandstorm is active
 {
     // Check if the target Pokémon is a Rock-type
-    if (defender->type == TYPE_ROCK)
+    if (gBattleMons[gBattlerTarget].type1 == TYPE_ROCK || gBattleMons[gBattlerTarget].type2 == TYPE_ROCK)
     {
         // Check if Special Defense can be boosted (i.e., not at the max stat stage)
         if (gBattleMons[gBattlerTarget].statStages[STAT_SPDEF] < MAX_STAT_STAGE)
@@ -3243,11 +3243,11 @@ if (gBattleWeather & B_WEATHER_SANDSTORM)  // Check if Sandstorm is active
     }
 }
 
-    // Hail boosts Ice-type Pokémon's Defense
+// Hail boosts Ice-type Pokémon's Defense
 if (gBattleWeather & B_WEATHER_HAIL)  // Check if Hail is active
 {
     // Check if the target Pokémon is an Ice-type
-    if (defender->type == TYPE_ICE)
+    if (gBattleMons[gBattlerTarget].type1 == TYPE_ICE || gBattleMons[gBattlerTarget].type2 == TYPE_ICE)
     {
         // Check if Defense can be boosted (i.e., not at the max stat stage)
         if (gBattleMons[gBattlerTarget].statStages[STAT_DEF] < MAX_STAT_STAGE)
@@ -3257,6 +3257,7 @@ if (gBattleWeather & B_WEATHER_HAIL)  // Check if Hail is active
         }
     }
 }
+
 
     // Self-destruct / Explosion cut defense in half
     if (gBattleMoves[gCurrentMove].effect == EFFECT_EXPLOSION)
