@@ -3106,7 +3106,7 @@ void DeleteFirstMoveAndGiveMoveToBoxMon(struct BoxPokemon *boxMon, u16 move)
     (var) /= (gStatStageRatios)[(mon)->statStages[(statIndex)]][1];                 \
 }
 
-s32 CalculateBaseDamage(struct BattlePokemon *attacker, struct BattlePokemon *defender, u32 move, u16 sideStatus, u16 powerOverride, u8 typeOverride, u8 battlerIdAtk, u8 battlerIdDef)
+s32 CalculateBaseDamage(struct BattlePokemon *attacker, struct BattlePokemon *defender, u32 move, u16 sideStatus, u16 powerOverride, u8 typeOverride, u8 battlerIdAtk, u8 battlerIdDef, u8 type)
 {
     u32 i;
     s32 damage = 0;
@@ -3228,11 +3228,12 @@ s32 CalculateBaseDamage(struct BattlePokemon *attacker, struct BattlePokemon *de
     if (type == TYPE_BUG && attacker->ability == ABILITY_SWARM && attacker->hp <= (attacker->maxHP / 3))
         gBattleMovePower = (150 * gBattleMovePower) / 100;
 
+
     // Sandstorm boosts Rock-type Pokémon's Special Defense
-if (gBattleWeather & B_WEATHER_SANDSTORM)  // Check if Sandstorm is active
+        if (gBattleWeather & B_WEATHER_SANDSTORM)  // Check if Sandstorm is active
 {
     // Check if the target Pokémon is a Rock-type
-    if (gBattleMons[gBattlerTarget].type1 == TYPE_ROCK || gBattleMons[gBattlerTarget].type2 == TYPE_ROCK)
+    if (defender->type == TYPE_ROCK)
     {
         // Check if Special Defense can be boosted (i.e., not at the max stat stage)
         if (gBattleMons[gBattlerTarget].statStages[STAT_SPDEF] < MAX_STAT_STAGE)
@@ -3243,11 +3244,11 @@ if (gBattleWeather & B_WEATHER_SANDSTORM)  // Check if Sandstorm is active
     }
 }
 
-// Hail boosts Ice-type Pokémon's Defense
-if (gBattleWeather & B_WEATHER_HAIL)  // Check if Hail is active
+    // Hail boosts Ice-type Pokémon's Defense
+    if (gBattleWeather & B_WEATHER_HAIL)  // Check if Hail is active
 {
     // Check if the target Pokémon is an Ice-type
-    if (gBattleMons[gBattlerTarget].type1 == TYPE_ICE || gBattleMons[gBattlerTarget].type2 == TYPE_ICE)
+    if (defender->type == TYPE_ICE)
     {
         // Check if Defense can be boosted (i.e., not at the max stat stage)
         if (gBattleMons[gBattlerTarget].statStages[STAT_DEF] < MAX_STAT_STAGE)
@@ -3257,8 +3258,6 @@ if (gBattleWeather & B_WEATHER_HAIL)  // Check if Hail is active
         }
     }
 }
-
-
     // Self-destruct / Explosion cut defense in half
     if (gBattleMoves[gCurrentMove].effect == EFFECT_EXPLOSION)
         defense /= 2;
