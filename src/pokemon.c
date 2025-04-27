@@ -3228,6 +3228,36 @@ s32 CalculateBaseDamage(struct BattlePokemon *attacker, struct BattlePokemon *de
     if (type == TYPE_BUG && attacker->ability == ABILITY_SWARM && attacker->hp <= (attacker->maxHP / 3))
         gBattleMovePower = (150 * gBattleMovePower) / 100;
 
+    // Sandstorm boosts Rock-type Pokémon's Special Defense
+if (gBattleWeather & B_WEATHER_SANDSTORM)  // Check if Sandstorm is active
+{
+    // Check if the target Pokémon is a Rock-type
+    if (defender->type == TYPE_ROCK)
+    {
+        // Check if Special Defense can be boosted (i.e., not at the max stat stage)
+        if (gBattleMons[gBattlerTarget].statStages[STAT_SPDEF] < MAX_STAT_STAGE)
+        {
+            // Boost Special Defense stat by 1 stage (effectively a 1.5x boost)
+            gBattleMons[gBattlerTarget].statStages[STAT_SPDEF]++;
+        }
+    }
+}
+
+    // Hail boosts Ice-type Pokémon's Defense
+if (gBattleWeather & B_WEATHER_HAIL)  // Check if Hail is active
+{
+    // Check if the target Pokémon is an Ice-type
+    if (defender->type == TYPE_ICE)
+    {
+        // Check if Defense can be boosted (i.e., not at the max stat stage)
+        if (gBattleMons[gBattlerTarget].statStages[STAT_DEF] < MAX_STAT_STAGE)
+        {
+            // Boost Defense stat by 1 stage (effectively a 1.5x boost)
+            gBattleMons[gBattlerTarget].statStages[STAT_DEF]++;
+        }
+    }
+}
+
     // Self-destruct / Explosion cut defense in half
     if (gBattleMoves[gCurrentMove].effect == EFFECT_EXPLOSION)
         defense /= 2;
