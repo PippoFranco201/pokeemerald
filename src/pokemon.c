@@ -3106,7 +3106,7 @@ void DeleteFirstMoveAndGiveMoveToBoxMon(struct BoxPokemon *boxMon, u16 move)
     (var) /= (gStatStageRatios)[(mon)->statStages[(statIndex)]][1];                 \
 }
 
-s32 CalculateBaseDamage(struct BattlePokemon *attacker, struct BattlePokemon *defender, u32 move, u16 sideStatus, u16 powerOverride, u8 typeOverride, u8 battlerIdAtk, u8 battlerIdDef, u8 type)
+s32 CalculateBaseDamage(struct BattlePokemon *attacker, struct BattlePokemon *defender, u32 move, u16 sideStatus, u16 powerOverride, u8 typeOverride, u8 battlerIdAtk, u8 battlerIdDef)
 {
     u32 i;
     s32 damage = 0;
@@ -3202,9 +3202,27 @@ s32 CalculateBaseDamage(struct BattlePokemon *attacker, struct BattlePokemon *de
     if (attackerHoldEffect == HOLD_EFFECT_THICK_CLUB && (attacker->species == SPECIES_CUBONE || attacker->species == SPECIES_MAROWAK))
         attack *= 2;
 
+    // Are effects of weather negated with cloud nine or air lock
+    if (WEATHER_HAS_EFFECT2)
+    {
+        // Boost Defense for Ice-types in Hail
+        if ((gBattleWeather & B_WEATHER_HAIL) && (defender->type1 == TYPE_ICE || defender->type2 == TYPE_ICE))
+        {
+            defense = (150 * defense) / 100;
+        }
+
+        // Boost Special Defense for Rock-types in sand
+        if ((gBattleWeather & B_WEATHER_SANDSTORM) && (defender->type1 == TYPE_ROCK || defender->type2 == TYPE_ROCK ||  defender->ability == ABILITY_SAND_VEIL))
+        {
+            spDefense = (150 * spDefense) / 100;
+        }
+    }
+
     // Apply abilities / field sports
     if (defender->ability == ABILITY_THICK_FAT && (type == TYPE_FIRE || type == TYPE_ICE))
         spAttack /= 2;
+    if (defender->ability == ABILITY_MAGMA_ARMOR && type == TYPE_WATER)
+        spAttack /= 8;
     if (attacker->ability == ABILITY_HUSTLE)
         attack = (150 * attack) / 100;
     if (attacker->ability == ABILITY_PLUS && ABILITY_ON_FIELD2(ABILITY_MINUS))
@@ -3228,36 +3246,6 @@ s32 CalculateBaseDamage(struct BattlePokemon *attacker, struct BattlePokemon *de
     if (type == TYPE_BUG && attacker->ability == ABILITY_SWARM && attacker->hp <= (attacker->maxHP / 3))
         gBattleMovePower = (150 * gBattleMovePower) / 100;
 
-
-    // Sandstorm boosts Rock-type Pokémon's Special Defense
-        if (gBattleWeather & B_WEATHER_SANDSTORM)  // Check if Sandstorm is active
-{
-    // Check if the target Pokémon is a Rock-type
-    if (defender->type == TYPE_ROCK)
-    {
-        // Check if Special Defense can be boosted (i.e., not at the max stat stage)
-        if (gBattleMons[gBattlerTarget].statStages[STAT_SPDEF] < MAX_STAT_STAGE)
-        {
-            // Boost Special Defense stat by 1 stage (effectively a 1.5x boost)
-            gBattleMons[gBattlerTarget].statStages[STAT_SPDEF]++;
-        }
-    }
-}
-
-    // Hail boosts Ice-type Pokémon's Defense
-    if (gBattleWeather & B_WEATHER_HAIL)  // Check if Hail is active
-{
-    // Check if the target Pokémon is an Ice-type
-    if (defender->type == TYPE_ICE)
-    {
-        // Check if Defense can be boosted (i.e., not at the max stat stage)
-        if (gBattleMons[gBattlerTarget].statStages[STAT_DEF] < MAX_STAT_STAGE)
-        {
-            // Boost Defense stat by 1 stage (effectively a 1.5x boost)
-            gBattleMons[gBattlerTarget].statStages[STAT_DEF]++;
-        }
-    }
-}
     // Self-destruct / Explosion cut defense in half
     if (gBattleMoves[gCurrentMove].effect == EFFECT_EXPLOSION)
         defense /= 2;
@@ -3305,9 +3293,12 @@ s32 CalculateBaseDamage(struct BattlePokemon *attacker, struct BattlePokemon *de
                 damage /= 2;
         }
 
-        // Moves hitting both targets do half damage in double battles
+        // Moves hitting both targets do 75% damage in double battles
         if ((gBattleTypeFlags & BATTLE_TYPE_DOUBLE) && gBattleMoves[move].target == MOVE_TARGET_BOTH && CountAliveMonsInBattle(BATTLE_ALIVE_DEF_SIDE) == 2)
-            damage /= 2;
+        {
+            damage = (damage * 75) / 100;
+        }
+
 
         // Moves always do at least 1 damage.
         if (damage == 0)
@@ -3356,12 +3347,10 @@ s32 CalculateBaseDamage(struct BattlePokemon *attacker, struct BattlePokemon *de
                 damage /= 2;
         }
 
-       // Moves hitting both targets do 75% damage in double battles
-    if ((gBattleTypeFlags & BATTLE_TYPE_DOUBLE) && gBattleMoves[move].target == MOVE_TARGET_BOTH && CountAliveMonsInBattle(BATTLE_ALIVE_DEF_SIDE) == 2)
-    {
-        damage = (damage * 75) / 100;
-    }
-    
+        // Moves hitting both targets do half damage in double battles
+        if ((gBattleTypeFlags & BATTLE_TYPE_DOUBLE) && gBattleMoves[move].target == MOVE_TARGET_BOTH && CountAliveMonsInBattle(BATTLE_ALIVE_DEF_SIDE) == 2)
+            damage /= 2;
+
         // Are effects of weather negated with cloud nine or air lock
         if (WEATHER_HAS_EFFECT2)
         {
