@@ -964,9 +964,9 @@ const struct BattleMove gBattleMoves[MOVES_COUNT] =
 
     [MOVE_GROWTH] =
     {
-        .effect = EFFECT_SPECIAL_ATTACK_UP,
+        .effect = EFFECT_GROWTH,
         .power = 0,
-        .type = TYPE_NORMAL,
+        .type = TYPE_GRASS,
         .accuracy = 0,
         .pp = 40,
         .secondaryEffectChance = 0,
