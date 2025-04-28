@@ -264,15 +264,15 @@
 #define VAR_ROXANNE_CALL_STEP_COUNTER                    0x40F4
 #define VAR_SCOTT_BF_CALL_STEP_COUNTER                   0x40F5
 #define VAR_RIVAL_RAYQUAZA_CALL_STEP_COUNTER             0x40F6
-#define VAR_PLAYER_BJ	                                 0x40F7 // Unused Var
-#define VAR_DEALER_BJ	                                 0x40F8 // Unused Var
-#define VAR_BET_BJ		                                 0x40F9 // Unused Var
-#define VAR_OPTIONS_BJ	                                 0x40FA // Unused Var
-#define VAR_OPTION1_TILENUM                              0x40FB // Unused Var
-#define VAR_OPTION2_TILENUM                              0x40FC
-#define VAR_OPTION3_TILENUM                              0x40FD // Unused Var
-#define VAR_FLIP_LEVEL	                                 0x40FE // Unused Var
-#define VAR_FLIP_WINNINGS                                0x40FF // Unused Var
+#define VAR_DEXNAV_SPECIES                               0x40F7 // Registered dexnav species
+#define VAR_DEXNAV_STEP_COUNTER                          0x40F8 // steps for finding hidden pokemon
+#define VAR_UNUSED_0x40F9                                0x40F9 // Unused Var
+#define VAR_UNUSED_0x40FA                                0x40FA // Unused Var
+#define VAR_UNUSED_0x40FB                                0x40FB // Unused Var
+#define VAR_UNUSED_0x40FC                                0x40FC // Unused Var
+#define VAR_UNUSED_0x40FD                                0x40FD // Unused Var
+#define VAR_UNUSED_0x40FE                                0x40FE // Unused Var
+#define VAR_UNUSED_0x40FF                                0x40FF // Unused Var
 
 #define VARS_END                                         0x40FF
 #define VARS_COUNT                                       (VARS_END - VARS_START + 1)
