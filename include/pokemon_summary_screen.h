@@ -11,6 +11,8 @@ static const u8 sMemoHiddenNatureTextColor[] = _("{COLOR LIGHT_BLUE}");
 static const u8 sText_EndParentheses[] = _(")");
 extern const struct CompressedSpriteSheet gSpriteSheet_MoveTypes;
 extern const struct SpriteTemplate gSpriteTemplate_MoveTypes;
+extern const struct SpriteTemplate sSpriteTemplate_MoveTypes;
+extern const struct CompressedSpriteSheet sSpriteSheet_MoveTypes;
 
 void ShowPokemonSummaryScreen(u8 mode, void *mons, u8 monIndex, u8 maxMonIndex, void (*callback)(void));
 void ShowSelectMovePokemonSummaryScreen(struct Pokemon *mons, u8 monIndex, u8 maxMonIndex, void (*callback)(void), u16 newMove);
