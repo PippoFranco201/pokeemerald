@@ -3,6 +3,7 @@
 #include "bike.h"
 #include "coord_event_weather.h"
 #include "daycare.h"
+#include "dexnav.h"
 #include "faraway_island.h"
 #include "event_data.h"
 #include "event_object_movement.h"
@@ -20,6 +21,7 @@
 #include "metatile_behavior.h"
 #include "overworld.h"
 #include "pokemon.h"
+#include "tx_registered_items_menu.h"
 #include "safari_zone.h"
 #include "script.h"
 #include "secret_base.h"
@@ -34,6 +36,7 @@
 #include "constants/map_types.h"
 #include "constants/songs.h"
 #include "constants/trainer_hill.h"
+#include "constants/items.h"
 
 static EWRAM_DATA u8 sWildEncounterImmunitySteps = 0;
 static EWRAM_DATA u16 sPrevMetatileBehavior = 0;
@@ -68,6 +71,7 @@ static bool8 TryStartMiscWalkingScripts(u16);
 static bool8 TryStartStepCountScript(u16);
 static void UpdateFriendshipStepCounter(void);
 static bool8 UpdatePoisonStepCounter(void);
+static bool8 EnableAutoRun(void);
 
 void FieldClearPlayerInput(struct FieldInput *input)
 {
@@ -79,11 +83,13 @@ void FieldClearPlayerInput(struct FieldInput *input)
     input->heldDirection2 = FALSE;
     input->tookStep = FALSE;
     input->pressedBButton = FALSE;
-    input->input_field_1_0 = FALSE;
+    input->pressedRButton = FALSE;
+    input->pressedRButton = FALSE;
     input->input_field_1_1 = FALSE;
     input->input_field_1_2 = FALSE;
     input->input_field_1_3 = FALSE;
     input->dpadDirection = 0;
+    input->pressedListButton = FALSE;
 }
 
 void FieldGetPlayerInput(struct FieldInput *input, u16 newKeys, u16 heldKeys)
@@ -104,6 +110,15 @@ void FieldGetPlayerInput(struct FieldInput *input, u16 newKeys, u16 heldKeys)
                 input->pressedAButton = TRUE;
             if (newKeys & B_BUTTON)
                 input->pressedBButton = TRUE;
+            if (newKeys & R_BUTTON)
+                input->pressedRButton = TRUE;
+            //tx_registered_items_menu
+            if (newKeys & L_BUTTON && gSaveBlock2Ptr->optionsButtonMode != 2)
+                input->pressedListButton = TRUE;
+            else if (newKeys & R_BUTTON)
+                input->pressedListButton = TRUE;
+            if (newKeys & R_BUTTON && !FlagGet(FLAG_SYS_DEXNAV_SEARCH))
+                input->pressedRButton = TRUE;
         }
 
         if (heldKeys & (DPAD_UP | DPAD_DOWN | DPAD_LEFT | DPAD_RIGHT))
@@ -185,10 +200,29 @@ int ProcessPlayerFieldInput(struct FieldInput *input)
         ShowStartMenu();
         return TRUE;
     }
-    if (input->pressedSelectButton && UseRegisteredKeyItemOnField() == TRUE)
+    
+    if (input->tookStep && TryFindHiddenPokemon())
+        return TRUE;
+    
+    if (input->pressedSelectButton && UseRegisteredKeyItemOnField(0) == TRUE)
+        return TRUE;
+    
+    if (input->pressedRButton && EnableAutoRun())
+        return TRUE;
+    else if (input->pressedListButton)
+    {
+        TxRegItemsMenu_OpenMenu();
+        return TRUE;
+    }
+    
+    if (input->pressedRButton && TryStartDexnavSearch())
         return TRUE;
 
     return FALSE;
+}
+
+void overworld_poison_timer_set(void)
+{
 }
 
 static void GetPlayerPosition(struct MapPosition *position)
@@ -447,7 +481,7 @@ static const u8 *GetInteractedMetatileScript(struct MapPosition *position, u8 me
 
 static const u8 *GetInteractedWaterScript(struct MapPosition *unused1, u8 metatileBehavior, u8 direction)
 {
-    if (FlagGet(FLAG_BADGE05_GET) == TRUE && PartyHasMonWithSurf() == TRUE && IsPlayerFacingSurfableFishableWater() == TRUE)
+    if ((FlagGet(FLAG_BADGE05_GET) == TRUE || PartyHasMonWithSurf() == TRUE || CheckBagHasItem(ITEM_HM03 ,1)) && IsPlayerFacingSurfableFishableWater() == TRUE)
         return EventScript_UseSurf;
 
     if (MetatileBehavior_IsWaterfall(metatileBehavior) == TRUE)
@@ -632,6 +666,10 @@ static void UpdateFriendshipStepCounter(void)
 void ClearPoisonStepCounter(void)
 {
     VarSet(VAR_POISON_STEP_COUNTER, 0);
+}
+
+void FieldInput_HandleCancelSignpost(struct FieldInput *input)
+{
 }
 
 static bool8 UpdatePoisonStepCounter(void)
@@ -1002,3 +1040,26 @@ int SetCableClubWarp(void)
     SetupWarp(&gMapHeader, GetWarpEventAtMapPosition(&gMapHeader, &position), &position);
     return 0;
 }
+
+extern const u8 EventScript_DisableAutoRun[];
+extern const u8 EventScript_EnableAutoRun[];
+static bool8 EnableAutoRun(void)
+{
+    if (!FlagGet(FLAG_SYS_B_DASH))
+        return FALSE;   //auto run unusable until you get running shoes
+
+    PlaySE(SE_SELECT);
+    if (gSaveBlock2Ptr->autoRun)
+    {
+        gSaveBlock2Ptr->autoRun = FALSE;
+        ScriptContext_SetupScript(EventScript_DisableAutoRun);
+    }
+    else
+    {
+        gSaveBlock2Ptr->autoRun = TRUE;
+        ScriptContext_SetupScript(EventScript_EnableAutoRun);
+    }
+    
+    return TRUE;
+}
+

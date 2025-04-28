@@ -232,7 +232,8 @@ gBattleScriptsForMoveEffects::
 	.4byte BattleScript_EffectCalmMind               @ EFFECT_CALM_MIND
 	.4byte BattleScript_EffectDragonDance            @ EFFECT_DRAGON_DANCE
 	.4byte BattleScript_EffectCamouflage             @ EFFECT_CAMOUFLAGE
-
+	.4byte BattleScript_EffectLeafBlade              @ EFFECT_LEAF_BLADE
+	.4byte BattleScript_EffectGrowth				 @ EFFECT_GROWTH
 BattleScript_EffectHit::
 	jumpifnotmove MOVE_SURF, BattleScript_HitFromAtkCanceler
 	jumpifnostatus3 BS_TARGET, STATUS3_UNDERWATER, BattleScript_HitFromAtkCanceler
@@ -892,6 +893,49 @@ BattleScript_EffectFocusEnergy::
 	waitanimation
 	printfromtable gFocusEnergyUsedStringIds
 	waitmessage B_WAIT_TIME_LONG
+	goto BattleScript_MoveEnd
+
+BattleScript_EffectLeafBlade::
+	jumpifnotmove MOVE_SURF, BattleScript_BladeHitFromAtkCanceler
+	jumpifnostatus3 BS_TARGET, STATUS3_UNDERWATER, BattleScript_BladeHitFromAtkCanceler
+	orword gHitMarker, HITMARKER_IGNORE_UNDERWATER
+	setbyte sDMG_MULTIPLIER, 2
+BattleScript_BladeHitFromAtkCanceler::
+	attackcanceler
+BattleScript_BladeHitFromAccCheck::
+	accuracycheck BattleScript_PrintMoveMissed, ACC_CURR_MOVE
+BattleScript_BladeHitFromAtkString::
+	attackstring
+BattleScript_BladeHitFromCritCalc::
+	critcalc
+	damagecalc
+	typecalc
+	adjustnormaldamage
+BattleScript_LeafBladeHitFromAtkAnimation::
+	attackanimation
+	waitanimation
+	effectivenesssound
+	hitanimation BS_TARGET
+	waitstate
+	healthbarupdate BS_TARGET
+	datahpupdate BS_TARGET
+	critmessage
+	waitmessage B_WAIT_TIME_LONG
+	resultmessage
+	waitmessage B_WAIT_TIME_LONG
+	seteffectwithchance
+	tryfaintmon BS_TARGET
+	jumpifstatus2 BS_ATTACKER, STATUS2_FOCUS_ENERGY, BattleScript_EffectLeafBlade2
+	leafbladesetfocusenergy
+	jumpifstatus2 BS_ATTACKER, STATUS2_FOCUS_ENERGY, BattleScript_EffectGettingPumped
+	goto BattleScript_EffectLeafBlade2
+BattleScript_EffectGettingPumped::
+	printfromtable gFocusEnergyUsedStringIds
+	waitmessage B_WAIT_TIME_LONG
+BattleScript_EffectLeafBlade2::
+	attackcanceler
+	attackstring
+	ppreduce
 	goto BattleScript_MoveEnd
 
 BattleScript_EffectRecoil::
@@ -2289,7 +2333,7 @@ BattleScript_EffectNaturePower::
 	attackcanceler
 	attackstring
 	pause B_WAIT_TIME_SHORT
-	callterrainattack
+	callenvironmentattack
 	printstring STRINGID_NATUREPOWERTURNEDINTO
 	waitmessage B_WAIT_TIME_LONG
 	return
@@ -2763,6 +2807,31 @@ BattleScript_CalmMindTrySpDef::
 BattleScript_CalmMindEnd::
 	goto BattleScript_MoveEnd
 
+BattleScript_EffectGrowth::
+	attackcanceler
+	attackstring
+	ppreduce
+	jumpifstat BS_ATTACKER, CMP_LESS_THAN, STAT_SPATK, MAX_STAT_STAGE, BattleScript_GrowthDoMoveAnim
+	jumpifstat BS_ATTACKER, CMP_EQUAL, STAT_ATK, MAX_STAT_STAGE, BattleScript_CantRaiseMultipleStats
+BattleScript_GrowthDoMoveAnim::
+	attackanimation
+	waitanimation
+	setbyte sSTAT_ANIM_PLAYED, FALSE
+	playstatchangeanimation BS_ATTACKER, BIT_SPATK | BIT_ATK, 0
+	setstatchanger STAT_SPATK, 1, FALSE
+	statbuffchange MOVE_EFFECT_AFFECTS_USER | STAT_CHANGE_ALLOW_PTR, BattleScript_GrowthTryAtk
+	jumpifbyte CMP_EQUAL, cMULTISTRING_CHOOSER, B_MSG_STAT_WONT_INCREASE, BattleScript_GrowthTryAtk
+	printfromtable gStatUpStringIds
+	waitmessage B_WAIT_TIME_LONG
+BattleScript_GrowthTryAtk::
+	setstatchanger STAT_ATK, 1, FALSE
+	statbuffchange MOVE_EFFECT_AFFECTS_USER | STAT_CHANGE_ALLOW_PTR, BattleScript_GrowthEnd
+	jumpifbyte CMP_EQUAL, cMULTISTRING_CHOOSER, B_MSG_STAT_WONT_INCREASE, BattleScript_GrowthEnd
+	printfromtable gStatUpStringIds
+	waitmessage B_WAIT_TIME_LONG
+BattleScript_GrowthEnd::
+	goto BattleScript_MoveEnd
+
 BattleScript_CantRaiseMultipleStats::
 	pause B_WAIT_TIME_SHORT
 	orbyte gMoveResultFlags, MOVE_RESULT_FAILED
@@ -2799,7 +2868,7 @@ BattleScript_EffectCamouflage::
 	attackcanceler
 	attackstring
 	ppreduce
-	settypetoterrain BattleScript_ButItFailed
+	settypetoenvironment BattleScript_ButItFailed
 	attackanimation
 	waitanimation
 	printstring STRINGID_PKMNCHANGEDTYPE

@@ -16,6 +16,7 @@
 #include "bg.h"
 #include "data.h"
 #include "decompress.h"
+#include "dexnav.h"
 #include "dma3.h"
 #include "event_data.h"
 #include "evolution_scene.h"
@@ -144,7 +145,7 @@ EWRAM_DATA u8 gBattleTextBuff3[TEXT_BUFF_ARRAY_COUNT] = {0};
 // it will instead overflow into useful data.
 EWRAM_DATA static u32 sFlickerArray[25] = {0};
 EWRAM_DATA u32 gBattleTypeFlags = 0;
-EWRAM_DATA u8 gBattleTerrain = 0;
+EWRAM_DATA u8 gBattleEnvironment = 0;
 EWRAM_DATA u32 gUnusedFirstBattleVar1 = 0; // Never read
 EWRAM_DATA struct MultiPartnerMenuPokemon gMultiPartnerParty[MULTI_PARTY_SIZE] = {0};
 EWRAM_DATA static struct MultiPartnerMenuPokemon* sMultiPartnerPartyBuffer = NULL;
@@ -332,7 +333,7 @@ static const s8 sCenterToCornerVecXs[8] ={-32, -16, -16, -32, -32};
 // 10 is ×1.0 TYPE_MUL_NORMAL
 // 05 is ×0.5 TYPE_MUL_NOT_EFFECTIVE
 // 00 is ×0.0 TYPE_MUL_NO_EFFECT
-const u8 gTypeEffectiveness[336] =
+const u8 gTypeEffectiveness[372] =
 {
     TYPE_NORMAL, TYPE_ROCK, TYPE_MUL_NOT_EFFECTIVE,
     TYPE_NORMAL, TYPE_STEEL, TYPE_MUL_NOT_EFFECTIVE,
@@ -442,6 +443,18 @@ const u8 gTypeEffectiveness[336] =
     TYPE_STEEL, TYPE_ICE, TYPE_MUL_SUPER_EFFECTIVE,
     TYPE_STEEL, TYPE_ROCK, TYPE_MUL_SUPER_EFFECTIVE,
     TYPE_STEEL, TYPE_STEEL, TYPE_MUL_NOT_EFFECTIVE,
+    TYPE_FAIRY, TYPE_FIGHTING, TYPE_MUL_SUPER_EFFECTIVE,
+    TYPE_FAIRY, TYPE_DRAGON, TYPE_MUL_SUPER_EFFECTIVE,
+    TYPE_FAIRY, TYPE_DARK, TYPE_MUL_SUPER_EFFECTIVE,
+    TYPE_FAIRY, TYPE_POISON, TYPE_MUL_NOT_EFFECTIVE,
+    TYPE_FAIRY, TYPE_STEEL, TYPE_MUL_NOT_EFFECTIVE,
+    TYPE_FAIRY, TYPE_FIRE, TYPE_MUL_NOT_EFFECTIVE,
+    TYPE_FIGHTING, TYPE_FAIRY, TYPE_MUL_NOT_EFFECTIVE,
+    TYPE_POISON, TYPE_FAIRY, TYPE_MUL_SUPER_EFFECTIVE,
+    TYPE_BUG, TYPE_FAIRY, TYPE_MUL_NOT_EFFECTIVE,
+    TYPE_DRAGON, TYPE_FAIRY, TYPE_MUL_NO_EFFECT,
+    TYPE_DARK, TYPE_FAIRY, TYPE_MUL_NOT_EFFECTIVE,
+    TYPE_STEEL, TYPE_FAIRY, TYPE_MUL_SUPER_EFFECTIVE,
     TYPE_FORESIGHT, TYPE_FORESIGHT, TYPE_MUL_NO_EFFECT,
     TYPE_NORMAL, TYPE_GHOST, TYPE_MUL_NO_EFFECT,
     TYPE_FIGHTING, TYPE_GHOST, TYPE_MUL_NO_EFFECT,
@@ -468,6 +481,7 @@ const u8 gTypeNames[NUMBER_OF_MON_TYPES][TYPE_NAME_LENGTH + 1] =
     [TYPE_ICE] = _("ICE"),
     [TYPE_DRAGON] = _("DRAGON"),
     [TYPE_DARK] = _("DARK"),
+    [TYPE_FAIRY] = _("FAIRY"),
 };
 
 // This is a factor in how much money you get for beating a trainer.
@@ -669,9 +683,9 @@ static void CB2_InitBattleInternal(void)
     gBattle_BG3_X = 0;
     gBattle_BG3_Y = 0;
 
-    gBattleTerrain = BattleSetup_GetTerrainId();
+    gBattleEnvironment = BattleSetup_GetEnvironmentId();
     if (gBattleTypeFlags & BATTLE_TYPE_RECORDED)
-        gBattleTerrain = BATTLE_TERRAIN_BUILDING;
+        gBattleEnvironment = BATTLE_ENVIRONMENT_BUILDING;
 
     InitBattleBgsVideo();
     LoadBattleTextboxAndBackground();
@@ -2011,7 +2025,7 @@ static u8 CreateNPCTrainerParty(struct Pokemon *party, u16 trainerNum, bool8 fir
 
                 personalityValue += nameHash << 8;
                 fixedIV = partyData[i].iv * MAX_PER_STAT_IVS / 255;
-                CreateMon(&party[i], partyData[i].species, partyData[i].lvl, fixedIV, TRUE, personalityValue, OT_ID_RANDOM_NO_SHINY, 0);
+                CreateMon(&party[i], partyData[i].species, GetScaledLevel(partyData[i].lvl), fixedIV, TRUE, personalityValue, OT_ID_PRESET, fixedOTID);
                 break;
             }
             case F_TRAINER_PARTY_CUSTOM_MOVESET:
@@ -2023,7 +2037,7 @@ static u8 CreateNPCTrainerParty(struct Pokemon *party, u16 trainerNum, bool8 fir
 
                 personalityValue += nameHash << 8;
                 fixedIV = partyData[i].iv * MAX_PER_STAT_IVS / 255;
-                CreateMon(&party[i], partyData[i].species, partyData[i].lvl, fixedIV, TRUE, personalityValue, OT_ID_RANDOM_NO_SHINY, 0);
+                CreateMon(&party[i], partyData[i].species, GetScaledLevel(partyData[i].lvl), fixedIV, TRUE, personalityValue, OT_ID_PRESET, fixedOTID);
 
                 for (j = 0; j < MAX_MON_MOVES; j++)
                 {
@@ -2041,7 +2055,7 @@ static u8 CreateNPCTrainerParty(struct Pokemon *party, u16 trainerNum, bool8 fir
 
                 personalityValue += nameHash << 8;
                 fixedIV = partyData[i].iv * MAX_PER_STAT_IVS / 255;
-                CreateMon(&party[i], partyData[i].species, partyData[i].lvl, fixedIV, TRUE, personalityValue, OT_ID_RANDOM_NO_SHINY, 0);
+                CreateMon(&party[i], partyData[i].species, GetScaledLevel(partyData[i].lvl), fixedIV, TRUE, personalityValue, OT_ID_PRESET, fixedOTID);
 
                 SetMonData(&party[i], MON_DATA_HELD_ITEM, &partyData[i].heldItem);
                 break;
@@ -2055,7 +2069,7 @@ static u8 CreateNPCTrainerParty(struct Pokemon *party, u16 trainerNum, bool8 fir
 
                 personalityValue += nameHash << 8;
                 fixedIV = partyData[i].iv * MAX_PER_STAT_IVS / 255;
-                CreateMon(&party[i], partyData[i].species, partyData[i].lvl, fixedIV, TRUE, personalityValue, OT_ID_RANDOM_NO_SHINY, 0);
+                CreateMon(&party[i], partyData[i].species, GetScaledLevel(partyData[i].lvl), fixedIV, TRUE, personalityValue, OT_ID_PRESET, fixedOTID);
 
                 SetMonData(&party[i], MON_DATA_HELD_ITEM, &partyData[i].heldItem);
 
@@ -3382,7 +3396,7 @@ static void BattleIntroPrepareBackgroundSlide(void)
     if (gBattleControllerExecFlags == 0)
     {
         gActiveBattler = GetBattlerAtPosition(0);
-        BtlController_EmitIntroSlide(BUFFER_A, gBattleTerrain);
+        BtlController_EmitIntroSlide(BUFFER_A, gBattleEnvironment);
         MarkBattlerForControllerExec(gActiveBattler);
         gBattleMainFunc = BattleIntroDrawTrainersOrMonsSprites;
         gBattleCommunication[MULTIUSE_STATE] = 0;
@@ -4643,6 +4657,7 @@ u8 GetWhoStrikesFirst(u8 battler1, u8 battler2, bool8 ignoreChosenMoves)
     // badge boost
     if (!(gBattleTypeFlags & (BATTLE_TYPE_LINK | BATTLE_TYPE_RECORDED_LINK | BATTLE_TYPE_FRONTIER))
         && FlagGet(FLAG_BADGE03_GET)
+        && (VarGet(VAR_DIFFICULTY) != DIFFICULTY_HARD)
         && GetBattlerSide(battler1) == B_SIDE_PLAYER)
     {
         speedBattler1 = (speedBattler1 * 110) / 100;
@@ -4677,6 +4692,7 @@ u8 GetWhoStrikesFirst(u8 battler1, u8 battler2, bool8 ignoreChosenMoves)
     // badge boost
     if (!(gBattleTypeFlags & (BATTLE_TYPE_LINK | BATTLE_TYPE_RECORDED_LINK | BATTLE_TYPE_FRONTIER))
         && FlagGet(FLAG_BADGE03_GET)
+        && (VarGet(VAR_DIFFICULTY) != DIFFICULTY_HARD)
         && GetBattlerSide(battler2) == B_SIDE_PLAYER)
     {
         speedBattler2 = (speedBattler2 * 110) / 100;
@@ -5160,6 +5176,12 @@ static void FreeResetData_ReturnToOvOrDoEvolutions(void)
 {
     if (!gPaletteFade.active)
     {
+        if (gDexnavBattle && (gBattleOutcome == B_OUTCOME_WON || gBattleOutcome == B_OUTCOME_CAUGHT))
+            IncrementDexNavChain();
+        else
+            gSaveBlock1Ptr->dexNavChain = 0;
+        
+        gDexnavBattle = FALSE;
         ResetSpriteData();
         if (gLeveledUpInBattle == 0 || gBattleOutcome != B_OUTCOME_WON)
         {

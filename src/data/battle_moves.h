@@ -964,9 +964,9 @@ const struct BattleMove gBattleMoves[MOVES_COUNT] =
 
     [MOVE_GROWTH] =
     {
-        .effect = EFFECT_SPECIAL_ATTACK_UP,
+        .effect = EFFECT_GROWTH,
         .power = 0,
-        .type = TYPE_NORMAL,
+        .type = TYPE_GRASS,
         .accuracy = 0,
         .pp = 40,
         .secondaryEffectChance = 0,
@@ -2422,7 +2422,7 @@ const struct BattleMove gBattleMoves[MOVES_COUNT] =
     {
         .effect = EFFECT_CONFUSE,
         .power = 0,
-        .type = TYPE_NORMAL,
+        .type = TYPE_FAIRY,
         .accuracy = 75,
         .pp = 10,
         .secondaryEffectChance = 0,
@@ -2656,7 +2656,7 @@ const struct BattleMove gBattleMoves[MOVES_COUNT] =
     {
         .effect = EFFECT_ATTACK_DOWN_2,
         .power = 0,
-        .type = TYPE_NORMAL,
+        .type = TYPE_FAIRY,
         .accuracy = 100,
         .pp = 20,
         .secondaryEffectChance = 0,
@@ -3072,7 +3072,7 @@ const struct BattleMove gBattleMoves[MOVES_COUNT] =
     {
         .effect = EFFECT_MOONLIGHT,
         .power = 0,
-        .type = TYPE_NORMAL,
+        .type = TYPE_FAIRY,
         .accuracy = 0,
         .pp = 5,
         .secondaryEffectChance = 0,
@@ -4526,8 +4526,8 @@ const struct BattleMove gBattleMoves[MOVES_COUNT] =
 
     [MOVE_LEAF_BLADE] =
     {
-        .effect = EFFECT_HIGH_CRITICAL,
-        .power = 70,
+        .effect = EFFECT_LEAF_BLADE,
+        .power = 80,
         .type = TYPE_GRASS,
         .accuracy = 100,
         .pp = 15,

@@ -10,6 +10,7 @@
 #include "battle_setup.h"
 #include "battle_tower.h"
 #include "data.h"
+#include "dexnav.h"
 #include "event_data.h"
 #include "evolution_scene.h"
 #include "field_specials.h"
@@ -67,6 +68,7 @@ static union PokemonSubstruct *GetSubstruct(struct BoxPokemon *boxMon, u32 perso
 static void EncryptBoxMon(struct BoxPokemon *boxMon);
 static void DecryptBoxMon(struct BoxPokemon *boxMon);
 static void Task_PlayMapChosenOrBattleBGM(u8 taskId);
+static void ShuffleStatArray(u8* statArray);
 static bool8 ShouldGetStatBadgeBoost(u16 flagId, u8 battlerId);
 static u16 GiveMoveToBoxMon(struct BoxPokemon *boxMon, u16 move);
 static bool8 ShouldSkipFriendshipChange(void);
@@ -2209,6 +2211,8 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
     u32 personality;
     u32 value;
     u16 checksum;
+    u8 maxIV = MAX_IV_MASK;
+    u8 statIDs[] = {0, 1, 2, 3, 4, 5};
 
     ZeroBoxMonData(boxMon);
 
@@ -2217,10 +2221,8 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
     else
         personality = Random32();
 
-    SetBoxMonData(boxMon, MON_DATA_PERSONALITY, &personality);
-
     // Determine original trainer ID
-    if (otIdType == OT_ID_RANDOM_NO_SHINY)
+    if (otIdType == OT_ID_RANDOM_NO_SHINY) // Pokemon cannot be shiny
     {
         u32 shinyValue;
         do
@@ -2236,12 +2238,38 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
     }
     else // Player is the OT
     {
+        #ifdef ITEM_SHINY_CHARM
+        u32 shinyRolls = (CheckBagHasItem(ITEM_SHINY_CHARM, 1)) ? 3 : 1;
+        #else
+        u32 shinyRolls = 1;
+        #endif
+        u32 i;
+        
         value = gSaveBlock2Ptr->playerTrainerId[0]
-              | (gSaveBlock2Ptr->playerTrainerId[1] << 8)
-              | (gSaveBlock2Ptr->playerTrainerId[2] << 16)
-              | (gSaveBlock2Ptr->playerTrainerId[3] << 24);
-    }
+                  | (gSaveBlock2Ptr->playerTrainerId[1] << 8)
+                  | (gSaveBlock2Ptr->playerTrainerId[2] << 16)
+                  | (gSaveBlock2Ptr->playerTrainerId[3] << 24);
+                  
+        for (i = 0; i < shinyRolls; i++)
+        {
+            if (Random() < SHINY_ODDS)
+                FlagSet(FLAG_SHINY_CREATION);   // use a flag bc of CreateDexNavWildMon
+        }
 
+        if (FlagGet(FLAG_SHINY_CREATION))
+        {
+            u8 nature = personality % NUM_NATURES;  // keep current nature
+            do {
+                personality = Random32();
+                personality = ((((Random() % SHINY_ODDS) ^ (HIHALF(value) ^ LOHALF(value))) ^ LOHALF(personality)) << 16) | LOHALF(personality);
+            } while (nature != GetNatureFromPersonality(personality));
+            
+            // clear the flag after use
+            FlagClear(FLAG_SHINY_CREATION);
+        }
+    }
+    
+    SetBoxMonData(boxMon, MON_DATA_PERSONALITY, &personality);
     SetBoxMonData(boxMon, MON_DATA_OT_ID, &value);
 
     checksum = CalculateBoxMonChecksum(boxMon);
@@ -2272,34 +2300,59 @@ void CreateBoxMon(struct BoxPokemon *boxMon, u16 species, u8 level, u8 fixedIV, 
         SetBoxMonData(boxMon, MON_DATA_SPDEF_IV, &fixedIV);
     }
     else
+{
+    u32 iv, i;
+    value = Random();
+
+    iv = value & MAX_IV_MASK;
+    SetBoxMonData(boxMon, MON_DATA_HP_IV, &iv);
+    iv = (value & (MAX_IV_MASK << 5)) >> 5;
+    SetBoxMonData(boxMon, MON_DATA_ATK_IV, &iv);
+    iv = (value & (MAX_IV_MASK << 10)) >> 10;
+    SetBoxMonData(boxMon, MON_DATA_DEF_IV, &iv);
+
+    value = Random();
+
+    iv = value & MAX_IV_MASK;
+    SetBoxMonData(boxMon, MON_DATA_SPEED_IV, &iv);
+    iv = (value & (MAX_IV_MASK << 5)) >> 5;
+    SetBoxMonData(boxMon, MON_DATA_SPATK_IV, &iv);
+    iv = (value & (MAX_IV_MASK << 10)) >> 10;
+    SetBoxMonData(boxMon, MON_DATA_SPDEF_IV, &iv);
+
+    // Set three random IVs to 31
+    ShuffleStatArray(statIDs);
+
+    for (i = 0; i < 3; i++)
     {
-        u32 iv;
-        value = Random();
-
-        iv = value & MAX_IV_MASK;
-        SetBoxMonData(boxMon, MON_DATA_HP_IV, &iv);
-        iv = (value & (MAX_IV_MASK << 5)) >> 5;
-        SetBoxMonData(boxMon, MON_DATA_ATK_IV, &iv);
-        iv = (value & (MAX_IV_MASK << 10)) >> 10;
-        SetBoxMonData(boxMon, MON_DATA_DEF_IV, &iv);
-
-        value = Random();
-
-        iv = value & MAX_IV_MASK;
-        SetBoxMonData(boxMon, MON_DATA_SPEED_IV, &iv);
-        iv = (value & (MAX_IV_MASK << 5)) >> 5;
-        SetBoxMonData(boxMon, MON_DATA_SPATK_IV, &iv);
-        iv = (value & (MAX_IV_MASK << 10)) >> 10;
-        SetBoxMonData(boxMon, MON_DATA_SPDEF_IV, &iv);
+        SetBoxMonData(boxMon, MON_DATA_HP_IV + statIDs[i], &maxIV);
     }
+}
+
 
     if (gSpeciesInfo[species].abilities[1])
     {
         value = personality & 1;
         SetBoxMonData(boxMon, MON_DATA_ABILITY_NUM, &value);
     }
+    
+    value = HIDDEN_NATURE_NONE;
+    SetBoxMonData(boxMon, MON_DATA_HIDDEN_NATURE, &value);
 
     GiveBoxMonInitialMoveset(boxMon);
+}
+
+static void ShuffleStatArray(u8* statArray)
+{
+    int i;
+
+    // Shuffle the stats array using a Fisher-Yates shuffle
+    for (i = NUM_STATS - 1; i > 0; i--)
+    {
+        u8 temp;
+        int j = Random() % (i + 1);
+        SWAP(statArray[i], statArray[j], temp);
+    }
 }
 
 void CreateMonWithNature(struct Pokemon *mon, u16 species, u8 level, u8 fixedIV, u8 nature)
@@ -2707,7 +2760,7 @@ static u16 GetDeoxysStat(struct Pokemon *mon, s32 statId)
     ivVal = GetMonData(mon, MON_DATA_HP_IV + statId, NULL);
     evVal = GetMonData(mon, MON_DATA_HP_EV + statId, NULL);
     statValue = ((sDeoxysBaseStats[statId] * 2 + ivVal + evVal / 4) * mon->level) / 100 + 5;
-    nature = GetNature(mon);
+    nature = GetNature(mon, TRUE);
     statValue = ModifyStatByNature(nature, statValue, (u8)statId);
     return statValue;
 }
@@ -2815,7 +2868,7 @@ static u16 CalculateBoxMonChecksum(struct BoxPokemon *boxMon)
 {                                                               \
     u8 baseStat = gSpeciesInfo[species].base;                   \
     s32 n = (((2 * baseStat + iv + ev / 4) * level) / 100) + 5; \
-    u8 nature = GetNature(mon);                                 \
+    u8 nature = GetNature(mon, TRUE);                           \
     n = ModifyStatByNature(nature, n, statIndex);               \
     SetMonData(mon, field, &n);                                 \
 }
@@ -3199,9 +3252,27 @@ s32 CalculateBaseDamage(struct BattlePokemon *attacker, struct BattlePokemon *de
     if (attackerHoldEffect == HOLD_EFFECT_THICK_CLUB && (attacker->species == SPECIES_CUBONE || attacker->species == SPECIES_MAROWAK))
         attack *= 2;
 
+    // Are effects of weather negated with cloud nine or air lock
+    if (WEATHER_HAS_EFFECT2)
+    {
+        // Boost Defense for Ice-types in Hail
+        if ((gBattleWeather & B_WEATHER_HAIL) && (defender->types[0] == TYPE_ICE || defender->types[1] == TYPE_ICE))
+        {
+             defense = (150 * defense) / 100;
+        }
+ 
+        // Boost Special Defense for Rock-types in sand
+        if ((gBattleWeather & B_WEATHER_SANDSTORM) && (defender->types[0] == TYPE_ROCK || defender->types[1] == TYPE_ROCK ))
+        {
+             spDefense = (150 * spDefense) / 100;
+        }
+    }
+    
     // Apply abilities / field sports
     if (defender->ability == ABILITY_THICK_FAT && (type == TYPE_FIRE || type == TYPE_ICE))
         spAttack /= 2;
+    if (defender->ability == ABILITY_MAGMA_ARMOR && type == TYPE_WATER)
+        spAttack /= 8;
     if (attacker->ability == ABILITY_HUSTLE)
         attack = (150 * attack) / 100;
     if (attacker->ability == ABILITY_PLUS && ABILITY_ON_FIELD2(ABILITY_MINUS))
@@ -3272,9 +3343,12 @@ s32 CalculateBaseDamage(struct BattlePokemon *attacker, struct BattlePokemon *de
                 damage /= 2;
         }
 
-        // Moves hitting both targets do half damage in double battles
+        // Moves hitting both targets do 75% damage in double battles
         if ((gBattleTypeFlags & BATTLE_TYPE_DOUBLE) && gBattleMoves[move].target == MOVE_TARGET_BOTH && CountAliveMonsInBattle(BATTLE_ALIVE_DEF_SIDE) == 2)
-            damage /= 2;
+        {
+            damage = (damage * 75) / 100;
+        }
+
 
         // Moves always do at least 1 damage.
         if (damage == 0)
@@ -3322,10 +3396,6 @@ s32 CalculateBaseDamage(struct BattlePokemon *attacker, struct BattlePokemon *de
             else
                 damage /= 2;
         }
-
-        // Moves hitting both targets do half damage in double battles
-        if ((gBattleTypeFlags & BATTLE_TYPE_DOUBLE) && gBattleMoves[move].target == MOVE_TARGET_BOTH && CountAliveMonsInBattle(BATTLE_ALIVE_DEF_SIDE) == 2)
-            damage /= 2;
 
         // Are effects of weather negated with cloud nine or air lock
         if (WEATHER_HAS_EFFECT2)
@@ -3407,6 +3477,8 @@ u8 CountAliveMonsInBattle(u8 caseId)
 static bool8 ShouldGetStatBadgeBoost(u16 badgeFlag, u8 battlerId)
 {
     if (gBattleTypeFlags & (BATTLE_TYPE_LINK | BATTLE_TYPE_EREADER_TRAINER | BATTLE_TYPE_RECORDED_LINK | BATTLE_TYPE_FRONTIER))
+        return FALSE;
+     if (VarGet(VAR_DIFFICULTY) == DIFFICULTY_HARD)
         return FALSE;
     else if (GetBattlerSide(battlerId) != B_SIDE_PLAYER)
         return FALSE;
@@ -4059,6 +4131,9 @@ u32 GetBoxMonData3(struct BoxPokemon *boxMon, s32 field, u8 *data)
                 | (substruct3->worldRibbon << 26);
         }
         break;
+    case MON_DATA_HIDDEN_NATURE:
+        retVal = substruct0->hiddenNature;
+        break;
     default:
         break;
     }
@@ -4379,6 +4454,9 @@ void SetBoxMonData(struct BoxPokemon *boxMon, s32 field, const void *dataArg)
         substruct3->spDefenseIV = (ivs >> 25) & MAX_IV_MASK;
         break;
     }
+    case MON_DATA_HIDDEN_NATURE:
+        SET8(substruct0->hiddenNature);
+        break;
     default:
         break;
     }
@@ -5047,6 +5125,11 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
                             if (dataUnsigned == 0)
                                 dataUnsigned = 1;
                             break;
+                        case ITEM6_HEAL_HP_QUARTER:
+                                dataUnsigned = GetMonData(mon, MON_DATA_MAX_HP, NULL) / 4;
+                                if (dataUnsigned == 0)
+                                    dataUnsigned = 1;
+                                break;    
                         case ITEM6_HEAL_HP_LVL_UP:
                             dataUnsigned = gBattleScripting.levelUpHP;
                             break;
@@ -5463,9 +5546,12 @@ u8 *UseStatIncreaseItem(u16 itemId)
     return gDisplayedStringBattle;
 }
 
-u8 GetNature(struct Pokemon *mon)
+u8 GetNature(struct Pokemon *mon, bool32 checkHidden)
 {
-    return GetMonData(mon, MON_DATA_PERSONALITY, 0) % NUM_NATURES;
+    if (!checkHidden || GetMonData(mon, MON_DATA_HIDDEN_NATURE, 0) == HIDDEN_NATURE_NONE)
+        return GetNatureFromPersonality(GetMonData(mon, MON_DATA_PERSONALITY, 0));
+    else
+        return GetMonData(mon, MON_DATA_HIDDEN_NATURE, 0);
 }
 
 u8 GetNatureFromPersonality(u32 personality)
@@ -6562,7 +6648,7 @@ bool8 IsMonSpriteNotFlipped(u16 species)
 
 s8 GetMonFlavorRelation(struct Pokemon *mon, u8 flavor)
 {
-    u8 nature = GetNature(mon);
+    u8 nature = GetNature(mon, FALSE);
     return gPokeblockFlavorCompatibilityTable[nature * FLAVOR_COUNT + flavor];
 }
 
@@ -6650,7 +6736,8 @@ static s32 GetWildMonTableIdInAlteringCave(u16 species)
 
 void SetWildMonHeldItem(void)
 {
-    if (!(gBattleTypeFlags & (BATTLE_TYPE_LEGENDARY | BATTLE_TYPE_TRAINER | BATTLE_TYPE_PYRAMID | BATTLE_TYPE_PIKE)))
+    if (!(gBattleTypeFlags & (BATTLE_TYPE_LEGENDARY | BATTLE_TYPE_TRAINER | BATTLE_TYPE_PYRAMID | BATTLE_TYPE_PIKE))
+      && !gDexnavBattle)
     {
         u16 rnd = Random() % 100;
         u16 species = GetMonData(&gEnemyParty[0], MON_DATA_SPECIES, 0);
@@ -6942,6 +7029,9 @@ void HandleSetPokedexFlag(u16 nationalNum, u8 caseId, u32 personality)
         if (NationalPokedexNumToSpecies(nationalNum) == SPECIES_SPINDA)
             gSaveBlock2Ptr->pokedex.spindaPersonality = personality;
     }
+    
+    if (caseId == FLAG_SET_SEEN)
+        TryIncrementSpeciesSearchLevel(nationalNum);    // encountering pokemon increments its search level
 }
 
 const u8 *GetTrainerClassNameFromId(u16 trainerId)

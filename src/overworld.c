@@ -6,6 +6,7 @@
 #include "bg.h"
 #include "cable_club.h"
 #include "clock.h"
+#include "dexnav.h"
 #include "event_data.h"
 #include "event_object_movement.h"
 #include "event_scripts.h"
@@ -66,6 +67,9 @@
 #include "constants/songs.h"
 #include "constants/trainer_hill.h"
 #include "constants/weather.h"
+#include "item.h"
+#include "constants/items.h"
+
 
 struct CableClubPlayer
 {
@@ -170,6 +174,7 @@ static void TransitionMapMusic(void);
 static u8 GetAdjustedInitialTransitionFlags(struct InitialPlayerAvatarState *, u16, u8);
 static u8 GetAdjustedInitialDirection(struct InitialPlayerAvatarState *, u8, u16, u8);
 static u16 GetCenterScreenMetatileBehavior(void);
+static bool8 CanLearnFlashInParty(void);
 
 static void *sUnusedOverworldCallback;
 static u8 sPlayerLinkStates[MAX_LINK_PLAYERS];
@@ -796,6 +801,7 @@ void LoadMapFromCameraTransition(u8 mapGroup, u8 mapNum)
     LoadObjEventTemplatesFromHeader();
     TrySetMapSaveWarpStatus();
     ClearTempFieldEventData();
+    ResetDexNavSearch();
     ResetCyclingRoadChallengeData();
     RestartWildEncounterImmunitySteps();
     TryUpdateRandomTrainerRematches(mapGroup, mapNum);
@@ -846,6 +852,7 @@ static void LoadMapFromWarp(bool32 a1)
     CheckLeftFriendsSecretBase();
     TrySetMapSaveWarpStatus();
     ClearTempFieldEventData();
+    ResetDexNavSearch();
     ResetCyclingRoadChallengeData();
     RestartWildEncounterImmunitySteps();
     TryUpdateRandomTrainerRematches(gSaveBlock1Ptr->location.mapGroup, gSaveBlock1Ptr->location.mapNum);
@@ -962,6 +969,19 @@ bool32 Overworld_IsBikingAllowed(void)
         return FALSE;
     else
         return TRUE;
+}
+
+static bool8 CanLearnFlashInParty(void)
+{
+    u8 i;
+    for (i = 0; i < PARTY_SIZE; i++)
+    {
+        if (!GetMonData(&gPlayerParty[i], MON_DATA_SPECIES, NULL))
+            break;
+        if (!GetMonData(&gPlayerParty[i], MON_DATA_IS_EGG) && CanMonLearnTMHM(&gPlayerParty[i], ITEM_HM05 - ITEM_TM01))
+            return TRUE;
+    }
+    return FALSE;
 }
 
 // Flash level of 0 is fully bright
@@ -1442,6 +1462,7 @@ static void DoCB1_Overworld(u16 newKeys, u16 heldKeys)
     UpdatePlayerAvatarTransitionState();
     FieldClearPlayerInput(&inputStruct);
     FieldGetPlayerInput(&inputStruct, newKeys, heldKeys);
+    FieldInput_HandleCancelSignpost(&inputStruct);
     if (!ArePlayerFieldControlsLocked())
     {
         if (ProcessPlayerFieldInput(&inputStruct) == 1)

@@ -10,7 +10,7 @@
 #define TYPE_GROUND           4
 #define TYPE_ROCK             5
 #define TYPE_BUG              6
-#define TYPE_GHOST            7
+#define TYPE_DARK             7
 #define TYPE_STEEL            8
 #define TYPE_MYSTERY          9
 #define TYPE_FIRE             10
@@ -20,8 +20,9 @@
 #define TYPE_PSYCHIC          14
 #define TYPE_ICE              15
 #define TYPE_DRAGON           16
-#define TYPE_DARK             17
-#define NUMBER_OF_MON_TYPES   18
+#define TYPE_GHOST            17
+#define TYPE_FAIRY            18
+#define NUMBER_OF_MON_TYPES   19
 
 // Pokémon egg groups
 #define EGG_GROUP_NONE                0
@@ -148,6 +149,7 @@
 #define OT_ID_PLAYER_ID       0
 #define OT_ID_PRESET          1
 #define OT_ID_RANDOM_NO_SHINY 2
+#define fixedOTID             3
 
 #define MON_GIVEN_TO_PARTY      0
 #define MON_GIVEN_TO_PC         1
@@ -169,6 +171,8 @@
 #define MON_MALE       0x00
 #define MON_FEMALE     0xFE
 #define MON_GENDERLESS 0xFF
+
+#define HIDDEN_NATURE_NONE      26  // 25 natures. not 0xFF to conserve bits
 
 // Constants for AdjustFriendship
 #define FRIENDSHIP_EVENT_GROW_LEVEL       0

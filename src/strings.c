@@ -299,6 +299,7 @@ const u8 gText_NumberItem_HM[] = _("{CLEAR_TO 0x11}{STR_VAR_1}{CLEAR 0x05}{STR_V
 const u8 gText_SizeSlash[] = _("SIZE /");
 const u8 gText_FirmSlash[] = _("FIRM /");
 const u8 gText_Var1DotVar2[] = _("{STR_VAR_1}.{STR_VAR_2}”");
+const u8 gText_Var1DotVar2_Metric[] = _("{STR_VAR_1}.{STR_VAR_2}cm");
 
 // Berry firmness strings
 const u8 gBerryFirmnessString_VerySoft[] = _("Very soft");
@@ -340,6 +341,8 @@ const u8 gText_Var1DisdainfullyAteVar2[] = _("{STR_VAR_1} disdainfully ate the\n
 const u8 gText_ShopBuy[] = _("BUY");
 const u8 gText_ShopSell[] = _("SELL");
 const u8 gText_ShopQuit[] = _("QUIT");
+const u8 gText_SoldOut[] = _("I'm sorry, but that item is sold out.\p");
+const u8 gText_SoldOut2[] = _("SOLD OUT");
 const u8 gText_InBagVar1[] = _("IN BAG: {STR_VAR_1}");
 const u8 gText_QuitShopping[] = _("Quit shopping.");
 const u8 gText_Var1CertainlyHowMany[] = _("{STR_VAR_1}? Certainly.\nHow many would you like?");
@@ -352,6 +355,7 @@ const u8 gText_ThankYouIllSendItHome[] = _("Thank you!\nI'll send it to your hom
 const u8 gText_ThanksIllSendItHome[] = _("Thanks!\nI'll send it to your PC at home.");
 const u8 gText_YouDontHaveMoney[] = _("You don't have enough money.{PAUSE_UNTIL_PRESS}");
 const u8 gText_NoMoreRoomForThis[] = _("You have no more room for this\nitem.{PAUSE_UNTIL_PRESS}");
+const u8 gText_YouAlreadyHaveThis[] = _("You already have this item.{PAUSE_UNTIL_PRESS}");
 const u8 gText_SpaceForVar1Full[] = _("The space for {STR_VAR_1} is full.{PAUSE_UNTIL_PRESS}");
 const u8 gText_AnythingElseICanHelp[] = _("Is there anything else I can help\nyou with?");
 const u8 gText_CanIHelpWithAnythingElse[] = _("Can I help you with anything else?");
@@ -514,14 +518,37 @@ const u8 gText_EggWillTakeSomeTime[] = _("What will hatch from this?\nIt will ta
 const u8 gText_EggWillHatchSoon[] = _("It moves occasionally.\nIt should hatch soon.");
 const u8 gText_EggAboutToHatch[] = _("It's making sounds.\nIt's about to hatch!");
 const u8 gText_HMMovesCantBeForgotten2[] = _("HM moves can't be\nforgotten now.");
-const u8 gText_XNatureMetAtYZ[] = _("{DYNAMIC 0}{DYNAMIC 2}{DYNAMIC 1}{DYNAMIC 5} nature,\nmet at {LV_2}{DYNAMIC 0}{DYNAMIC 3}{DYNAMIC 1},\n{DYNAMIC 0}{DYNAMIC 4}{DYNAMIC 1}.");
-const u8 gText_XNatureHatchedAtYZ[] = _("{DYNAMIC 0}{DYNAMIC 2}{DYNAMIC 1}{DYNAMIC 5} nature,\nhatched at {LV_2}{DYNAMIC 0}{DYNAMIC 3}{DYNAMIC 1},\n{DYNAMIC 0}{DYNAMIC 4}{DYNAMIC 1}.");
-const u8 gText_XNatureObtainedInTrade[] = _("{DYNAMIC 0}{DYNAMIC 2}{DYNAMIC 1}{DYNAMIC 5} nature,\nobtained in a trade.");
-const u8 gText_XNatureFatefulEncounter[] = _("{DYNAMIC 0}{DYNAMIC 2}{DYNAMIC 1}{DYNAMIC 5} nature,\nobtained in a fateful\nencounter at {LV_2}{DYNAMIC 0}{DYNAMIC 3}{DYNAMIC 1}.");
-const u8 gText_XNatureProbablyMetAt[] = _("{DYNAMIC 0}{DYNAMIC 2}{DYNAMIC 1}{DYNAMIC 5} nature,\nprobably met at {LV_2}{DYNAMIC 0}{DYNAMIC 3}{DYNAMIC 1},\n{DYNAMIC 0}{DYNAMIC 4}{DYNAMIC 1}.");
-const u8 gText_XNature[] = _("{DYNAMIC 0}{DYNAMIC 2}{DYNAMIC 1}{DYNAMIC 5} nature");
-const u8 gText_XNatureMetSomewhereAt[] = _("{DYNAMIC 0}{DYNAMIC 2}{DYNAMIC 1}{DYNAMIC 5} nature,\nmet somewhere at {LV_2}{DYNAMIC 0}{DYNAMIC 3}{DYNAMIC 1}.");
-const u8 gText_XNatureHatchedSomewhereAt[] = _("{DYNAMIC 0}{DYNAMIC 2}{DYNAMIC 1}{DYNAMIC 5} nature,\nhatched somewhere at {LV_2}{DYNAMIC 0}{DYNAMIC 3}{DYNAMIC 1}.");
+
+const u8 gText_XNatureMetAtYZ[] = _(
+    "{DYNAMIC 0x00}{DYNAMIC 0x02}{DYNAMIC 0x01}{DYNAMIC 0x05}{DYNAMIC 0x06}{DYNAMIC 0x07} nature,\n"
+    "met at {LV_2}{DYNAMIC 0x00}{DYNAMIC 0x03}{DYNAMIC 0x01},\n{DYNAMIC 0x00}{DYNAMIC 0x04}{DYNAMIC 0x01}.");
+
+const u8 gText_XNatureHatchedAtYZ[] = _(
+    "{DYNAMIC 0x00}{DYNAMIC 0x02}{DYNAMIC 0x01}{DYNAMIC 0x05}{DYNAMIC 0x06}{DYNAMIC 0x07} nature,\n"
+    "hatched at {LV_2}{DYNAMIC 0x00}{DYNAMIC 0x03}{DYNAMIC 0x01},\n{DYNAMIC 0x00}{DYNAMIC 0x04}{DYNAMIC 0x01}.");
+
+const u8 gText_XNatureObtainedInTrade[] = _(
+    "{DYNAMIC 0x00}{DYNAMIC 0x02}{DYNAMIC 0x01}{DYNAMIC 0x05}{DYNAMIC 0x06}{DYNAMIC 0x07} nature,\n"
+    "obtained in a trade.");
+
+const u8 gText_XNatureFatefulEncounter[] = _(
+    "{DYNAMIC 0x00}{DYNAMIC 0x02}{DYNAMIC 0x01}{DYNAMIC 0x05}{DYNAMIC 0x06}{DYNAMIC 0x07} nature,\n"
+    "obtained in a fateful\nencounter at {LV_2}{DYNAMIC 0x00}{DYNAMIC 0x03}{DYNAMIC 0x01}.");
+
+const u8 gText_XNatureProbablyMetAt[] = _(
+    "{DYNAMIC 0x00}{DYNAMIC 0x02}{DYNAMIC 0x01}{DYNAMIC 0x05}{DYNAMIC 0x06}{DYNAMIC 0x07} nature,\n"
+    "probably met at {LV_2}{DYNAMIC 0x00}{DYNAMIC 0x03}{DYNAMIC 0x01},\n{DYNAMIC 0x00}{DYNAMIC 0x04}{DYNAMIC 0x01}.");
+
+const u8 gText_XNature[] = _("{DYNAMIC 0x00}{DYNAMIC 0x02}{DYNAMIC 0x01}{DYNAMIC 0x05}{DYNAMIC 0x06}{DYNAMIC 0x07} nature");
+
+const u8 gText_XNatureMetSomewhereAt[] = _(
+    "{DYNAMIC 0x00}{DYNAMIC 0x02}{DYNAMIC 0x01}{DYNAMIC 0x05}{DYNAMIC 0x06}{DYNAMIC 0x07} nature,\n"
+    "met somewhere at {LV_2}{DYNAMIC 0x00}{DYNAMIC 0x03}{DYNAMIC 0x01}.");
+
+const u8 gText_XNatureHatchedSomewhereAt[] = _(
+    "{DYNAMIC 0x00}{DYNAMIC 0x02}{DYNAMIC 0x01}{DYNAMIC 0x05}{DYNAMIC 0x06}{DYNAMIC 0x07} nature,\n"
+    "hatched somewhere at {LV_2}{DYNAMIC 0x00}{DYNAMIC 0x03}{DYNAMIC 0x01}.");
+
 const u8 gText_OddEggFoundByCouple[] = _("An odd POKéMON EGG found\nby the DAY CARE couple.");
 const u8 gText_PeculiarEggNicePlace[] = _("A peculiar POKéMON EGG\nobtained at the nice place.");
 const u8 gText_PeculiarEggTrade[] = _("A peculiar POKéMON EGG\nobtained in a trade.");
@@ -1230,6 +1257,8 @@ const u8 gText_BattleFactory[] = _("BATTLE FACTORY");
 const u8 gText_BattleArena[] = _("BATTLE ARENA");
 const u8 gText_BattlePike[] = _("BATTLE PIKE");
 const u8 gText_BattlePyramid[] = _("BATTLE PYRAMID");
+const u8 gText_Easy[] = _("EASY");
+const u8 gText_Hard[] = _("HARD");
 
 ALIGNED(4) const u8 gText_FacilitySingle[] = _("{STR_VAR_1} SINGLE");
 ALIGNED(4) const u8 gText_FacilityDouble[] = _("{STR_VAR_1} DOUBLE");
@@ -1490,21 +1519,28 @@ const u8 gText_BattleStyle[] = _("BATTLE STYLE");
 const u8 gText_Sound[] = _("SOUND");
 const u8 gText_Frame[] = _("FRAME");
 const u8 gText_OptionMenuCancel[] = _("CANCEL");
+const u8 gText_Font[] = _("FONT");  //tx_optionsPlus
+const u8 gText_OptionMatchCalls[] = _("OVERWORLD CALLS");    //tx_optionsPlus
+const u8 gText_OptionMenuSave[] = _("SAVE");
 const u8 gText_ButtonMode[] = _("BUTTON MODE");
-const u8 gText_TextSpeedSlow[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}SLOW");
-const u8 gText_TextSpeedMid[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}MID");
-const u8 gText_TextSpeedFast[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}FAST");
-const u8 gText_BattleSceneOn[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}ON");
-const u8 gText_BattleSceneOff[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}OFF");
-const u8 gText_BattleStyleShift[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}SHIFT");
-const u8 gText_BattleStyleSet[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}SET");
-const u8 gText_SoundMono[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}MONO");
-const u8 gText_SoundStereo[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}STEREO");
-const u8 gText_FrameType[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}TYPE");
-const u8 gText_FrameTypeNumber[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}");
-const u8 gText_ButtonTypeNormal[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}NORMAL");
-const u8 gText_ButtonTypeLR[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}LR");
-const u8 gText_ButtonTypeLEqualsA[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}L=A");
+const u8 gText_TextSpeedSlow[] = _("SLOW");
+const u8 gText_TextSpeedMid[] = _("MID");
+const u8 gText_TextSpeedFast[] = _("FAST");
+const u8 gText_BattleSceneOn[] = _("ON");
+const u8 gText_BattleSceneOff[] = _("OFF");
+const u8 gText_BattleStyleShift[] = _("SHIFT");
+const u8 gText_BattleStyleSet[] = _("SET");
+const u8 gText_UnitSystemMetric[] = _("METRIC");       //tx_optionsPlus
+const u8 gText_UnitSystemImperial[] = _("IMPERIAL");   //tx_optionsPlus
+const u8 gText_OptionFontEmerald[] = _("EMERALD");    //tx_optionsPlus
+const u8 gText_OptionFontFireRed[] = _("FRLG");        //tx_optionsPlus
+const u8 gText_SoundMono[] = _("MONO");
+const u8 gText_SoundStereo[] = _("STEREO");
+const u8 gText_FrameType[] = _("TYPE");
+const u8 gText_FrameTypeNumber[] = _("");
+const u8 gText_ButtonTypeNormal[] = _("NORMAL");
+const u8 gText_ButtonTypeLR[] = _("LR");
+const u8 gText_ButtonTypeLEqualsA[] = _("L=A");
 const u8 gText_NumPlayerLink[] = _("{STR_VAR_1}P LINK");
 const u8 gText_BronzeCard[] = _("BRONZE");
 const u8 gText_CopperCard[] = _("COPPER");
@@ -1528,6 +1564,7 @@ const u8 gText_MenuOption[] = _("OPTION");
 const u8 gText_MenuExit[] = _("EXIT");
 const u8 gText_MenuRetire[] = _("RETIRE");
 const u8 gText_MenuRest[] = _("REST");
+const u8 gText_MenuDexNav[] = _("DEXNAV");
 const u8 gText_SafariBallStock[] = _("SAFARI BALLS\nStock: {STR_VAR_1}");
 const u8 gText_BattlePyramidFloor[] = _("Battle Pyramid\n{STR_VAR_1}");
 const u8 gText_Floor1[] = _("Floor 1");
@@ -1840,3 +1877,16 @@ const u8 gText_Answer[] = _("ANSWER");
 const u8 gText_PokeBalls[] = _("POKé BALLS");
 const u8 gText_Berry[] = _("BERRY");
 const u8 gText_Berries[] = _("BERRIES");
+
+// Exp. Share
+const u8 gText_ExpShareOn[] = _("Turned on the Exp. Share.\pParty will now gain a portion\nof the Experience Points.{PAUSE_UNTIL_PRESS}");
+const u8 gText_ExpShareOff[] = _("Turned off the Exp. Share.\pParty will no longer gain a portion\nof any Experience Points.{PAUSE_UNTIL_PRESS}");
+
+// frlg_tm_case_port
+const u8 gText_TMCase[] =               _("TM CASE");
+const u8 gText_Close[] =                _("CLOSE");
+const u8 gText_TMCaseWillBePutAway[] =  _("The TM CASE will be\nput away.");
+const u8 gText_FontSmall[] =            _("{FONT_SMALL}");
+const u8 gText_FontShort[] =            _("{FONT_SHORT}");
+const u8 gText_TMCase_Blue[] =          _("{COLOR_HIGHLIGHT_SHADOW BLUE TRANSPARENT LIGHT_BLUE}{STR_VAR_2}");
+

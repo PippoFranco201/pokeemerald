@@ -632,7 +632,7 @@ static void CB2_EndScriptedWildBattle(void)
     }
 }
 
-u8 BattleSetup_GetTerrainId(void)
+u8 BattleSetup_GetEnvironmentId(void)
 {
     u16 tileBehavior;
     s16 x, y;
@@ -641,11 +641,11 @@ u8 BattleSetup_GetTerrainId(void)
     tileBehavior = MapGridGetMetatileBehaviorAt(x, y);
 
     if (MetatileBehavior_IsTallGrass(tileBehavior))
-        return BATTLE_TERRAIN_GRASS;
+        return BATTLE_ENVIRONMENT_GRASS;
     if (MetatileBehavior_IsLongGrass(tileBehavior))
-        return BATTLE_TERRAIN_LONG_GRASS;
+        return BATTLE_ENVIRONMENT_LONG_GRASS;
     if (MetatileBehavior_IsSandOrDeepSand(tileBehavior))
-        return BATTLE_TERRAIN_SAND;
+        return BATTLE_ENVIRONMENT_SAND;
 
     switch (gMapHeader.mapType)
     {
@@ -655,41 +655,41 @@ u8 BattleSetup_GetTerrainId(void)
         break;
     case MAP_TYPE_UNDERGROUND:
         if (MetatileBehavior_IsIndoorEncounter(tileBehavior))
-            return BATTLE_TERRAIN_BUILDING;
+            return BATTLE_ENVIRONMENT_BUILDING;
         if (MetatileBehavior_IsSurfableWaterOrUnderwater(tileBehavior))
-            return BATTLE_TERRAIN_POND;
-        return BATTLE_TERRAIN_CAVE;
+            return BATTLE_ENVIRONMENT_POND;
+        return BATTLE_ENVIRONMENT_CAVE;
     case MAP_TYPE_INDOOR:
     case MAP_TYPE_SECRET_BASE:
-        return BATTLE_TERRAIN_BUILDING;
+        return BATTLE_ENVIRONMENT_BUILDING;
     case MAP_TYPE_UNDERWATER:
-        return BATTLE_TERRAIN_UNDERWATER;
+        return BATTLE_ENVIRONMENT_UNDERWATER;
     case MAP_TYPE_OCEAN_ROUTE:
         if (MetatileBehavior_IsSurfableWaterOrUnderwater(tileBehavior))
-            return BATTLE_TERRAIN_WATER;
-        return BATTLE_TERRAIN_PLAIN;
+            return BATTLE_ENVIRONMENT_WATER;
+        return BATTLE_ENVIRONMENT_PLAIN;
     }
     if (MetatileBehavior_IsDeepOrOceanWater(tileBehavior))
-        return BATTLE_TERRAIN_WATER;
+        return BATTLE_ENVIRONMENT_WATER;
     if (MetatileBehavior_IsSurfableWaterOrUnderwater(tileBehavior))
-        return BATTLE_TERRAIN_POND;
+        return BATTLE_ENVIRONMENT_POND;
     if (MetatileBehavior_IsMountain(tileBehavior))
-        return BATTLE_TERRAIN_MOUNTAIN;
+        return BATTLE_ENVIRONMENT_MOUNTAIN;
     if (TestPlayerAvatarFlags(PLAYER_AVATAR_FLAG_SURFING))
     {
         // Is BRIDGE_TYPE_POND_*?
         if (MetatileBehavior_GetBridgeType(tileBehavior) != BRIDGE_TYPE_OCEAN)
-            return BATTLE_TERRAIN_POND;
+            return BATTLE_ENVIRONMENT_POND;
 
         if (MetatileBehavior_IsBridgeOverWater(tileBehavior) == TRUE)
-            return BATTLE_TERRAIN_WATER;
+            return BATTLE_ENVIRONMENT_WATER;
     }
     if (gSaveBlock1Ptr->location.mapGroup == MAP_GROUP(ROUTE113) && gSaveBlock1Ptr->location.mapNum == MAP_NUM(ROUTE113))
-        return BATTLE_TERRAIN_SAND;
+        return BATTLE_ENVIRONMENT_SAND;
     if (GetSavedWeather() == WEATHER_SANDSTORM)
-        return BATTLE_TERRAIN_SAND;
+        return BATTLE_ENVIRONMENT_SAND;
 
-    return BATTLE_TERRAIN_PLAIN;
+    return BATTLE_ENVIRONMENT_PLAIN;
 }
 
 static u8 GetBattleTransitionTypeByMap(void)
@@ -754,7 +754,7 @@ static u8 GetSumOfEnemyPartyLevel(u16 opponentId, u8 numMons)
             const struct TrainerMonNoItemDefaultMoves *party;
             party = gTrainers[opponentId].party.NoItemDefaultMoves;
             for (i = 0; i < count; i++)
-                sum += party[i].lvl;
+                sum += GetScaledLevel(party[i].lvl);
         }
         break;
     case F_TRAINER_PARTY_CUSTOM_MOVESET:
@@ -762,7 +762,7 @@ static u8 GetSumOfEnemyPartyLevel(u16 opponentId, u8 numMons)
             const struct TrainerMonNoItemCustomMoves *party;
             party = gTrainers[opponentId].party.NoItemCustomMoves;
             for (i = 0; i < count; i++)
-                sum += party[i].lvl;
+                sum += GetScaledLevel(party[i].lvl);
         }
         break;
     case F_TRAINER_PARTY_HELD_ITEM:
@@ -770,7 +770,7 @@ static u8 GetSumOfEnemyPartyLevel(u16 opponentId, u8 numMons)
             const struct TrainerMonItemDefaultMoves *party;
             party = gTrainers[opponentId].party.ItemDefaultMoves;
             for (i = 0; i < count; i++)
-                sum += party[i].lvl;
+                sum += GetScaledLevel(party[i].lvl);
         }
         break;
     case F_TRAINER_PARTY_CUSTOM_MOVESET | F_TRAINER_PARTY_HELD_ITEM:
@@ -778,7 +778,7 @@ static u8 GetSumOfEnemyPartyLevel(u16 opponentId, u8 numMons)
             const struct TrainerMonItemCustomMoves *party;
             party = gTrainers[opponentId].party.ItemCustomMoves;
             for (i = 0; i < count; i++)
-                sum += party[i].lvl;
+            sum += GetScaledLevel(party[i].lvl);
         }
         break;
     }
@@ -1885,4 +1885,38 @@ u16 CountBattledRematchTeams(u16 trainerId)
     }
 
     return i;
+}
+
+u8 GetScaledLevel(u8 lvl)
+{
+    u8 badgeCount = 0;
+    u8 levelScaling = 0;
+    u32 i;
+    for (i = FLAG_BADGE01_GET; i < FLAG_BADGE01_GET + NUM_BADGES; i++)
+    {
+        if (FlagGet(i))
+            badgeCount++;
+    }
+
+    if (FlagGet(FLAG_IS_CHAMPION))
+        levelScaling = 5;
+    else if (badgeCount >= 6)
+        levelScaling = 4;
+    else if (badgeCount >= 4)
+        levelScaling = 3;
+    else if (badgeCount >= 2)
+        levelScaling = 2;
+    else
+        levelScaling = 1;
+
+    if (VarGet(VAR_DIFFICULTY) == DIFFICULTY_HARD)
+        lvl += levelScaling;
+    else if (VarGet(VAR_DIFFICULTY) == DIFFICULTY_EASY)
+        lvl -= levelScaling;
+
+    if (lvl > 100)
+        lvl = 100;
+    if (lvl < 1)
+        lvl = 1;
+    return lvl;
 }

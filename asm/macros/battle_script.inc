@@ -1044,7 +1044,7 @@
 	.byte 0xcb
 	.endm
 
-	.macro callterrainattack
+	.macro callenvironmentattack
 	.byte 0xcc
 	.endm
 
@@ -1192,7 +1192,7 @@
 	.4byte \ptr
 	.endm
 
-	.macro settypetoterrain ptr:req
+	.macro settypetoenvironment ptr:req
 	.byte 0xeb
 	.4byte \ptr
 	.endm
@@ -1251,6 +1251,10 @@
 	.macro trainerslideout position:req
 	.byte 0xf8
 	.byte \position
+	.endm
+
+	.macro leafbladesetfocusenergy
+	.byte 0xf9
 	.endm
 
 @ various command changed to more readable macros

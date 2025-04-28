@@ -41,6 +41,7 @@
 #include "constants/moves.h"
 #include "constants/party_menu.h"
 #include "constants/pokemon.h"
+#include "constants/pokemon_size_record.h"
 #include "constants/roulette.h"
 #include "constants/script_menu.h"
 #include "constants/secret_bases.h"
@@ -689,6 +690,10 @@ EventScript_BackupMrBrineyLocation::
 	.include "data/scripts/rival_graphics.inc"
 	.include "data/scripts/set_gym_trainers.inc"
 
+EventScript_CancelMessageBox::
+ 	release
+ 	end
+
 Common_EventScript_ShowBagIsFull::
 	msgbox gText_TooBadBagIsFull, MSGBOX_DEFAULT
 	release
@@ -1057,3 +1062,5 @@ Common_EventScript_LegendaryFlewAway::
 	.include "data/text/frontier_brain.inc"
 	.include "data/text/save.inc"
 	.include "data/text/birch_speech.inc"
+    .include "data/scripts/dexnav.inc"
+    

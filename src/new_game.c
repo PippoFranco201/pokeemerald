@@ -46,7 +46,9 @@
 #include "berry_powder.h"
 #include "mystery_gift.h"
 #include "union_room_chat.h"
+#include "constants/map_groups.h"
 #include "constants/items.h"
+#include "tx_registered_items_menu.h"
 
 extern const u8 EventScript_ResetAllMapFlags[];
 
@@ -92,12 +94,17 @@ static void InitPlayerTrainerId(void)
 // L=A isnt set here for some reason.
 static void SetDefaultOptions(void)
 {
-    gSaveBlock2Ptr->optionsTextSpeed = OPTIONS_TEXT_SPEED_MID;
+    gSaveBlock2Ptr->optionsTextSpeed = OPTIONS_TEXT_SPEED_FAST;
     gSaveBlock2Ptr->optionsWindowFrameType = 0;
     gSaveBlock2Ptr->optionsSound = OPTIONS_SOUND_MONO;
     gSaveBlock2Ptr->optionsBattleStyle = OPTIONS_BATTLE_STYLE_SHIFT;
     gSaveBlock2Ptr->optionsBattleSceneOff = FALSE;
     gSaveBlock2Ptr->regionMapZoom = FALSE;
+    gSaveBlock2Ptr->optionsUnitSystem = 0;  //tx_optionsPlus
+    gSaveBlock2Ptr->optionsHpBarSpeed = 0;  //tx_optionsPlus
+    gSaveBlock2Ptr->optionsExpBarSpeed = 0; //tx_optionsPlus
+    gSaveBlock2Ptr->optionsDisableMatchCall = 0;    //tx_optionsPlus
+    gSaveBlock2Ptr->optionsCurrentFont = 0;         //tx_optionsPlus
 }
 
 static void ClearPokedexFlags(void)
@@ -187,12 +194,13 @@ void NewGameInitData(void)
     ResetPokemonStorageSystem();
     ClearRoamerData();
     ClearRoamerLocationData();
-    gSaveBlock1Ptr->registeredItem = ITEM_NONE;
+    gSaveBlock1Ptr->registeredItemSelect = ITEM_NONE;
     ClearBag();
 	//AddBagItem(ITEM_COIN_CASE, 1);
 	//FlagSet(FLAG_BADGE01_GET);
 	//FlagSet(FLAG_BADGE02_GET);
     NewGameInitPCItems();
+    TxRegItemsMenu_RegisteredItemsMenuNewGame();
     ClearPokeblocks();
     ClearDecorationInventories();
     InitEasyChatPhrases();
@@ -212,6 +220,14 @@ void NewGameInitData(void)
     WipeTrainerNameRecords();
     ResetTrainerHillResults();
     ResetContestLinkResults();
+    
+    memset(&gSaveBlock2Ptr->itemFlags, 0, sizeof(gSaveBlock2Ptr->itemFlags));
+    gSaveBlock2Ptr->expShare = 0;
+    gSaveBlock2Ptr->autoRun = FALSE;
+#if USE_DEXNAV_SEARCH_LEVELS == TRUE
+    memset(gSaveBlock1Ptr->dexNavSearchLevels, 0, sizeof(gSaveBlock1Ptr->dexNavSearchLevels));
+#endif
+    gSaveBlock1Ptr->dexNavChain = 0;
 }
 
 static void ResetMiniGamesRecords(void)
