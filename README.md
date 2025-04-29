@@ -20,4 +20,37 @@ It builds the following ROM:
 
 To set up the repository, see [INSTALL.md](INSTALL.md).
 
+## FAQ
+### `(followers*)` Q: Where are the config settings?
+A: Configuration for the follower system is mostly in [event_objects.h](include/constants/event_objects.h):
+```c
+// If true, follower pokemon will bob up and down
+// during their idle & walking animations
+#define OW_MON_BOBBING  TRUE
+
+// If true, adds a small amount of overhead
+// to OW code so that large (48x48, 64x64) OWs
+// will display correctly under bridges, etc.
+#define LARGE_OW_SUPPORT TRUE
+```
+
+### `(lighting)` Q: How do I mark certain colors in a palette as light-blended?
+A: Create a `.pla` file in the same folder as the `.pal` with the same name.
+
+In this file you can enter color indices [0,15]
+on separate lines to mark those colors as being light-blended, i.e:
+
+`06.pla:`
+```
+# A comment
+0 # if color 0 is listed, uses it to blend with instead of the default!
+1
+9
+10
+```
+
+You might have to `make mostlyclean` or change the `.pal` file to pick up the changes.
+
+## See also
+
 For contacts and other pret projects, see [pret.github.io](https://pret.github.io/).

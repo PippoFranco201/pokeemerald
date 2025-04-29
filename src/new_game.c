@@ -194,7 +194,8 @@ void NewGameInitData(void)
     ResetPokemonStorageSystem();
     ClearRoamerData();
     ClearRoamerLocationData();
-    gSaveBlock1Ptr->registeredItemSelect = ITEM_NONE;
+    gSaveBlock1Ptr->registeredItemCompat = ITEM_NONE;
+    memset(gSaveBlock1Ptr->registeredItems, 0, sizeof(gSaveBlock1Ptr->registeredItems));
     ClearBag();
 	//AddBagItem(ITEM_COIN_CASE, 1);
 	//FlagSet(FLAG_BADGE01_GET);
