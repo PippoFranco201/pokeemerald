@@ -115,22 +115,3 @@
 //#define SIGHT_TAG               0x5424
 #define HELD_ITEM_TAG           0xd750
 
-// dexnav search variable
-#define MASK_SPECIES         0x3FFF  //first 14 bits
-#define MASK_ENVIRONMENT     0xC000  //last two bit
-
-//funcs
-void EndDexNavSearch(u8 taskId);
-void Task_OpenDexNavFromStartMenu(u8 taskId);
-bool8 TryStartDexnavSearch(void);
-void TryIncrementSpeciesSearchLevel(u16 dexNum);
-void ResetDexNavSearch(void);
-bool8 TryFindHiddenPokemon(void);
-bool8 DexNavTryMakeShinyMon(void);
-void IncrementDexNavChain(void);
-
-//ewram
-extern u8 gCurrentDexNavChain;
-extern bool8 gDexnavBattle;
-
-#endif //GUARD_DEXNAV_H

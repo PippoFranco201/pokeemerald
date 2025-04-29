@@ -198,9 +198,6 @@ int ProcessPlayerFieldInput(struct FieldInput *input)
         return TRUE;
     }
     
-    if (input->tookStep && TryFindHiddenPokemon())
-        return TRUE;
-    
     if (input->pressedSelectButton && UseRegisteredKeyItemOnField(0) == TRUE)
         return TRUE;
     
