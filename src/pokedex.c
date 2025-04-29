@@ -14,7 +14,6 @@
 #include "overworld.h"
 #include "palette.h"
 #include "pokedex.h"
-#include "pokedex_plus_hgss.h"
 #include "pokedex_area_screen.h"
 #include "pokedex_cry_screen.h"
 #include "scanline_effect.h"
@@ -1590,17 +1589,8 @@ static void ResetPokedexView(struct PokedexView *pokedexView)
     for (i = 0; i < ARRAY_COUNT(pokedexView->unkArr3); i++)
         pokedexView->unkArr3[i] = 0;
 }
-
-#define HGSS_DEX TRUE
-
 void CB2_OpenPokedex(void)
 {
-    if (HGSS_DEX)
-    {
-        CB2_OpenPokedexPlusHGSS();
-        return;
-    }
-
     switch (gMain.state)
     {
     case 0:
@@ -1655,6 +1645,7 @@ void CB2_OpenPokedex(void)
         break;
     }
 }
+
 
 static void CB2_Pokedex(void)
 {
