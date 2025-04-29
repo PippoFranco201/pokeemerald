@@ -264,8 +264,6 @@
 #define VAR_ROXANNE_CALL_STEP_COUNTER                    0x40F4
 #define VAR_SCOTT_BF_CALL_STEP_COUNTER                   0x40F5
 #define VAR_RIVAL_RAYQUAZA_CALL_STEP_COUNTER             0x40F6
-#define VAR_DEXNAV_SPECIES                               0x40F7 // Registered dexnav species
-#define VAR_DEXNAV_STEP_COUNTER                          0x40F8 // steps for finding hidden pokemon
 #define VAR_PLAYER_BJ                                    0x40F9 // Unused Var
 #define VAR_OPTION3_TILENUM                              0x40FA // Unused Var
 #define VAR_OPTION2_TILENUM                              0x40FB // Unused Var

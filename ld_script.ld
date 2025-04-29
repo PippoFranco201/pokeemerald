@@ -350,7 +350,6 @@ SECTIONS {
 		src/flappybird.o(.text);
         src/tx_registered_items_menu.o(.text);
         src/tm_case.o(.text);
-        src/dexnav.o(.text);
     } > ROM =0
 
     script_data :
@@ -723,7 +722,6 @@ SECTIONS {
 		src/flappybird.o(.rodata);
         src/tx_registered_items_menu.o(.rodata);
         src/tm_case.o(.rodata);
-        src/dexnav.o(.rodata);
     } > ROM =0
 
     song_data :

@@ -630,22 +630,6 @@ static void PlayerNotOnBikeMoving(u8 direction, u16 heldKeys)
         }
     }
     
-    gPlayerAvatar.creeping = FALSE;
-    if (gPlayerAvatar.flags & PLAYER_AVATAR_FLAG_SURFING)
-    {
-        if (FlagGet(FLAG_SYS_DEXNAV_SEARCH) && (heldKeys & A_BUTTON))
-        {
-            gPlayerAvatar.creeping = TRUE;
-            PlayerGoSlow(direction);
-        }
-        else
-        {
-            // speed 2 is fast, same speed as running
-            PlayerWalkFast(direction);
-        }
-        return;
-    }
-
     if (!(gPlayerAvatar.flags & PLAYER_AVATAR_FLAG_UNDERWATER) && (heldKeys & B_BUTTON || gSaveBlock2Ptr->autoRun) && FlagGet(FLAG_SYS_B_DASH)
      && IsRunningDisallowed(gObjectEvents[gPlayerAvatar.objectEventId].currentMetatileBehavior) == 0)
     {
@@ -659,11 +643,6 @@ static void PlayerNotOnBikeMoving(u8 direction, u16 heldKeys)
             gPlayerAvatar.flags |= PLAYER_AVATAR_FLAG_DASH;
         }
         return;
-    }
-    else if (FlagGet(FLAG_SYS_DEXNAV_SEARCH) && (heldKeys & A_BUTTON))
-    {
-        gPlayerAvatar.creeping = TRUE;
-        PlayerGoSlow(direction);
     }
     else
     {

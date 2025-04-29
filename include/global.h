@@ -1088,15 +1088,8 @@ struct SaveBlock1
     /*0x3D5A*/ u8 unused_3D5A[10];
     /*0x3D64*/ struct TrainerHillSave trainerHill;
     /*0x3D70*/ struct WaldaPhrase waldaPhrase;
-#if USE_DEXNAV_SEARCH_LEVELS == TRUE
-               u8 dexNavSearchLevels[NUM_SPECIES];
-#endif
-               u8 dexNavChain;
-                u8 registeredItemLastSelected:4; //max 16 items
-                u8 registeredItemListCount:4;
-                struct RegisteredItemSlot registeredItems[REGISTERED_ITEMS_MAX];
+    // sizeof: 0x3D88
 };
-// sizeof: 0x3D88
 
 extern struct SaveBlock1* gSaveBlock1Ptr;
 

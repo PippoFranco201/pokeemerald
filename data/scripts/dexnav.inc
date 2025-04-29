@@ -1,13 +1,3 @@
-EventScript_StartDexNavBattle::
-	lock
-	playse 0x15
-	applymovement OBJ_EVENT_ID_PLAYER Common_Movement_ExclamationMark
-	waitmovement 0
-	waitse
-	dowildbattle    
-	release
-	end
-
 
 EventScript_NotFoundNearby::
     msgbox sText_NotFoundNearby, MSGBOX_SIGN
